@@ -1,10 +1,7 @@
 package com.kernel;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import android.content.Context;
 import android.content.res.Resources;
@@ -20,6 +17,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.SparseArray;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -74,7 +72,7 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 	
 	// processes
 	private int lastProcessId = 0;
-	private final Map<Integer, Process> processes;
+	private final SparseArray<Process> processes;
 	
 	// sound
 	private final AudioManger soundManager;
@@ -96,7 +94,7 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 		this.fps = fps;
 		this.time = 1000 / this.fps;
 		
-		this.processes = new Hashtable<Integer, Process>();
+		this.processes = new SparseArray<Process>();
 		
 		this.soundManager = new AudioManger(context);
 		this.soundManager.loadSounds(soundClass);
@@ -282,7 +280,7 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 			{
 				consumed = update(this.time);
 				
-				this.totalTime += (consumed / 1000000);
+				this.totalTime += consumed / 1000000;
 				this.times++;
 				
 				if (this.time > consumed)
@@ -304,12 +302,21 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 	{
 		long start = System.nanoTime();
 		
-		Collection<Process> collection = this.processes.values();
-		Process[] list = new Process[collection.size()];
-		collection.toArray(list);
+		// ~ 20 us
+		int size = this.processes.size();
+		Process[] list = new Process[size];
+		for (int i = 0; i < size; i++)
+		{
+			list[i] = this.processes.valueAt(i);
+		}
 		
+		// ~ 300 us
 		updateProcesses(list, time);
+		
+		// ~ 160 us
 		updateCollisions(list);
+		
+		// ~ 16 ms
 		drawProcesses(list);
 		
 		return System.nanoTime() - start;
@@ -364,32 +371,18 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 		Canvas canvas = null;
 		try
 		{
-			canvas = this.surfaceHolder.lockCanvas(null);
+			// ~ 11 ms
+			canvas = this.surfaceHolder.lockCanvas();
+			
 			synchronized (this.surfaceHolder)
 			{
 				if (canvas != null)
 				{
 					// ~ 2 ms
-					// canvas.drawPaint(this.paintClear);
-					
-					long start = System.nanoTime();
-					
-					// Path path = new Path();
-					// path.moveTo(0, 0);
-					// path.lineTo(getScreenWidth(), 0);
-					// path.lineTo(getScreenWidth(), getScreenHeight());
-					// path.lineTo(0, getScreenHeight());
-					// path.close();
-					// canvas.drawPath(path, this.paintClear);
-					
 					canvas.drawPaint(this.paintClear);
 					
-					System.out.println("TEST: " + ((System.nanoTime() - start) / 1000) + " us");
-					
-					// ==================================================
-					
-					canvas.drawText("PROCESSES: " + this.processes.size(), getScreenWidth() - 10, 20, new Font(20, Color.GREEN, Align.RIGHT, true));
-					canvas.drawText("TIME: " + ((int)(this.totalTime / this.times)) + " ms", getScreenWidth() - 10, 45, new Font(20, Color.GREEN, Align.RIGHT, true));
+					canvas.drawText("PROCESSES: " + list.length, getScreenWidth() - 10, 20, new Font(20, Color.GREEN, Align.RIGHT, true));
+					canvas.drawText("TIME: " + (this.totalTime / this.times) + " ms", getScreenWidth() - 10, 45, new Font(20, Color.GREEN, Align.RIGHT, true));
 					
 					for (Text text : this.texts)
 					{
@@ -410,6 +403,7 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 		{
 			if (canvas != null)
 			{
+				// ~ 3 ms
 				this.surfaceHolder.unlockCanvasAndPost(canvas);
 			}
 		}
