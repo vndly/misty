@@ -381,14 +381,6 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 					// ~ 2 ms
 					canvas.drawPaint(this.paintClear);
 					
-					canvas.drawText("PROCESSES: " + list.length, getScreenWidth() - 10, 20, new Font(20, Color.GREEN, Align.RIGHT, true));
-					canvas.drawText("TIME: " + (this.totalTime / this.times) + " ms", getScreenWidth() - 10, 45, new Font(20, Color.GREEN, Align.RIGHT, true));
-					
-					for (Text text : this.texts)
-					{
-						canvas.drawText(text.getText(), text.getX(), text.getY(), text.getFont());
-					}
-					
 					for (Process process : list)
 					{
 						if (process.hasImage() && process.isVisible() && (!process.isSpeeling()))
@@ -396,6 +388,14 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 							canvas.drawBitmap(process.getBitmap(), process.x, process.y, null);
 						}
 					}
+					
+					for (Text text : this.texts)
+					{
+						canvas.drawText(text.getText(), text.getX(), text.getY(), text.getFont());
+					}
+					
+					canvas.drawText("PROCESSES: " + list.length, getScreenWidth() - 10, 20, new Font(20, Color.GREEN, Align.RIGHT, true));
+					canvas.drawText("TIME: " + (this.totalTime / this.times) + " ms", getScreenWidth() - 10, 45, new Font(20, Color.GREEN, Align.RIGHT, true));
 				}
 			}
 		}

@@ -75,7 +75,7 @@ public class Process implements IFramework
 		{
 			for (int i = 0; i < this.alarms.size(); i++)
 			{
-				Alarm alarm = this.alarms.get(this.alarms.keyAt(i));
+				Alarm alarm = this.alarms.valueAt(i);
 				
 				if (alarm.step())
 				{
@@ -222,16 +222,11 @@ public class Process implements IFramework
 	
 	// ============================= ALARMS =========================== \\
 	
-	public int setAlarm(OnAlarmRing listener, int delay, boolean loop)
-	{
-		this.lastAlarmId++;
-		this.alarms.put(this.lastAlarmId, new Alarm(this.lastAlarmId, listener, delay, loop));
-		return this.lastAlarmId;
-	}
-	
 	public int setAlarm(OnAlarmRing listener, int delay)
 	{
-		return setAlarm(listener, delay, false);
+		this.lastAlarmId++;
+		this.alarms.put(this.lastAlarmId, new Alarm(this.lastAlarmId, listener, delay));
+		return this.lastAlarmId;
 	}
 	
 	// ============================ SCREEN ========================== \\

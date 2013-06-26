@@ -6,15 +6,13 @@ public class Alarm
 	private final OnAlarmRing listener;
 	private final long delay;
 	private long limit;
-	private final boolean loop;
 	
-	public Alarm(int id, OnAlarmRing listener, long delay, boolean loop)
+	public Alarm(int id, OnAlarmRing listener, long delay)
 	{
 		this.id = id;
 		this.listener = listener;
 		this.delay = delay;
 		this.limit = System.currentTimeMillis() + delay;
-		this.loop = loop;
 	}
 	
 	public int getId()
@@ -24,25 +22,20 @@ public class Alarm
 	
 	public boolean step()
 	{
-		boolean ring = false;
+		boolean remove = false;
 		long current = System.currentTimeMillis();
 		
 		if (current >= this.limit)
 		{
-			this.listener.onAlarmRing();
-			ring = true;
-		}
-		
-		if (ring && (this.loop))
-		{
+			remove = (!this.listener.onAlarmRing());
 			this.limit = current + this.delay;
 		}
 		
-		return (ring && (!this.loop));
+		return remove;
 	}
 	
 	public interface OnAlarmRing
 	{
-		public void onAlarmRing();
+		public boolean onAlarmRing();
 	}
 }
