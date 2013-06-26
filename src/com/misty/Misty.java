@@ -1,4 +1,4 @@
-package com.androidgameframework;
+package com.misty;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,7 +12,7 @@ import com.kernel.Engine;
 import com.kernel.IFramework;
 import com.text.Text;
 
-public abstract class GameFramework extends Activity implements IFramework
+public abstract class Misty extends Activity implements IFramework
 {
 	private Engine engine;
 	
