@@ -14,7 +14,7 @@ public class Process implements IFramework
 	private final Engine engine;
 	
 	// states
-	enum State
+	public enum State
 	{
 		AWAKE, FROZEN, SLEEPING
 	}
@@ -30,18 +30,18 @@ public class Process implements IFramework
 	private boolean visible = true;
 	
 	// position
-	protected float x = 0;
-	protected float minX = Float.NaN;
-	protected float maxX = Float.NaN;
-	protected float y = 0;
-	protected float minY = Float.NaN;
-	protected float maxY = Float.NaN;
+	private float x = 0;
+	private float minX = Float.NaN;
+	private float maxX = Float.NaN;
+	private float y = 0;
+	private float minY = Float.NaN;
+	private float maxY = Float.NaN;
 	
 	// velocity
-	protected float velocityX = 0;
-	protected float velocityY = 0;
-	protected float maxVelocityX = Float.NaN;
-	protected float maxVelocityY = Float.NaN;
+	private float velocityX = 0;
+	private float velocityY = 0;
+	private float maxVelocityX = Float.NaN;
+	private float maxVelocityY = Float.NaN;
 	
 	// alarm
 	private int lastAlarmId = 0;
@@ -256,19 +256,9 @@ public class Process implements IFramework
 		return (int)this.x;
 	}
 	
-	public int getY()
-	{
-		return (int)this.y;
-	}
-	
 	public void addX(float value)
 	{
 		setX(this.x + value);
-	}
-	
-	public void addY(float value)
-	{
-		setY(this.y + value);
 	}
 	
 	public void setX(float x)
@@ -286,6 +276,46 @@ public class Process implements IFramework
 		}
 	}
 	
+	public float getMinX()
+	{
+		return this.minX;
+	}
+	
+	public void setMinX(float minX)
+	{
+		this.minX = minX;
+	}
+	
+	public void removeMinX()
+	{
+		this.minX = Float.NaN;
+	}
+	
+	public float getMaxX()
+	{
+		return this.maxX;
+	}
+	
+	public void setMaxX(float maxX)
+	{
+		this.maxX = maxX;
+	}
+	
+	public void removeMaxX()
+	{
+		this.maxX = Float.NaN;
+	}
+	
+	public int getY()
+	{
+		return (int)this.y;
+	}
+	
+	public void addY(float value)
+	{
+		setY(this.y + value);
+	}
+	
 	public void setY(float y)
 	{
 		this.y = y;
@@ -301,7 +331,42 @@ public class Process implements IFramework
 		}
 	}
 	
+	public float getMinY()
+	{
+		return this.minY;
+	}
+	
+	public void setMinY(float minY)
+	{
+		this.minY = minY;
+	}
+	
+	public void removeMinY()
+	{
+		this.minY = Float.NaN;
+	}
+	
+	public float getMaxY()
+	{
+		return this.maxY;
+	}
+	
+	public void setMaxY(float maxY)
+	{
+		this.maxY = maxY;
+	}
+	
+	public void removeMaxY()
+	{
+		this.maxY = Float.NaN;
+	}
+	
 	// ============================= VELOCITY =========================== \\
+	
+	public float getVelocityX()
+	{
+		return this.velocityX;
+	}
 	
 	public void addVelocityX(float value)
 	{
@@ -326,6 +391,11 @@ public class Process implements IFramework
 		}
 	}
 	
+	public float getVelocityY()
+	{
+		return this.velocityY;
+	}
+	
 	public void addVelocityY(float value)
 	{
 		setVelocityY(this.velocityY + value);
@@ -347,6 +417,36 @@ public class Process implements IFramework
 				this.velocityY = -this.maxVelocityY;
 			}
 		}
+	}
+	
+	public float getMaxVelocityX()
+	{
+		return this.maxVelocityX;
+	}
+	
+	public void setMaxVelocityX(float maxVelocityX)
+	{
+		this.maxVelocityX = maxVelocityX;
+	}
+	
+	public void removeMaxVelocityX()
+	{
+		this.maxVelocityX = Float.NaN;
+	}
+	
+	public float getMaxVelocityY()
+	{
+		return this.maxVelocityY;
+	}
+	
+	public void setMaxVelocityY(float maxVelocityY)
+	{
+		this.maxVelocityY = maxVelocityY;
+	}
+	
+	public void removeMaxVelocityY()
+	{
+		this.maxVelocityY = Float.NaN;
 	}
 	
 	// ============================= SCREEN =========================== \\

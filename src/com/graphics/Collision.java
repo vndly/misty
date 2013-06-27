@@ -37,10 +37,7 @@ public class Collision
 					int realX = x + rectA.left;
 					int realY = y + rectA.top;
 					
-					int colorA = bitmapA.getPixel(realX - xA, realY - yA);
-					int colorB = bitmapB.getPixel(realX - xB, realY - yB);
-					
-					result = (Color.red(colorA) != 0) || (Color.green(colorA) != 0) || ((Color.blue(colorA) != 0) && (Color.red(colorB) != 0)) || (Color.green(colorB) != 0) || (Color.blue(colorB) != 0);
+					result = (Color.alpha(bitmapA.getPixel(realX - xA, realY - yA)) > 0) && (Color.alpha(bitmapB.getPixel(realX - xB, realY - yB)) > 0);
 				}
 			}
 		}

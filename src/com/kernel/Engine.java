@@ -385,7 +385,7 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 					{
 						if (process.hasImage() && process.isVisible() && (!process.isSpeeling()))
 						{
-							canvas.drawBitmap(process.getBitmap(), process.x, process.y, null);
+							canvas.drawBitmap(process.getBitmap(), process.getX(), process.getY(), null);
 						}
 					}
 					
