@@ -12,10 +12,5 @@
         android:scaleType="fitXY"
         android:visibility="invisible"
         android:contentDescription="@string/background_description"/>
-    
-    <SurfaceView
-        android:id="@+id/surfaceView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-        
+
 </RelativeLayout>

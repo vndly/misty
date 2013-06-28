@@ -82,7 +82,7 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 	
 	// debug
 	private long totalTime = 0;
-	private long times = 0;
+	private long times = 1;
 	
 	public Engine(int fps, Context context, Class<?> soundClass, SurfaceView surfaceView, ImageView background, SensorManager sensorManager)
 	{

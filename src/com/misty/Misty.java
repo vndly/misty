@@ -4,10 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.view.SurfaceView;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import com.graphics.RenderView;
 import com.kernel.Engine;
 import com.kernel.IFramework;
 import com.text.Text;
@@ -31,11 +32,15 @@ public abstract class Misty extends Activity implements IFramework
 	
 	public void start(int fps, Class<?> soundClass)
 	{
-		SurfaceView surfaceView = (SurfaceView)findViewById(R.id.surfaceView);
+		RenderView surfaceView = new RenderView(this);
+		addContentView(surfaceView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		ImageView background = (ImageView)findViewById(R.id.background);
 		SensorManager sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
-		
 		this.engine = new Engine(fps, this, soundClass, surfaceView, background, sensorManager);
+	}
+	
+	public void startEngine()
+	{
 		this.engine.start();
 	}
 	
