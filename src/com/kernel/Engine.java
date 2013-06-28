@@ -310,10 +310,10 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 			list[i] = this.processes.valueAt(i);
 		}
 		
-		// ~ 300 us
+		// ~ 350 us
 		updateProcesses(list, time);
 		
-		// ~ 160 us
+		// ~ 200 us
 		updateCollisions(list);
 		
 		// ~ 16 ms
