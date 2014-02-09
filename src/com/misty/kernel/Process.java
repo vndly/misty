@@ -39,11 +39,11 @@ public class Process implements IFramework
 	private float minY = Float.NaN;
 	private float maxY = Float.NaN;
 	
-	// velocity
-	private float velocityX = 0;
-	private float velocityY = 0;
-	private float maxVelocityX = Float.NaN;
-	private float maxVelocityY = Float.NaN;
+	// acceleration
+	private float accelerationX = 0;
+	private float accelerationY = 0;
+	private float maxAccelerationX = Float.NaN;
+	private float maxAccelerationY = Float.NaN;
 	
 	// alarm
 	private int lastAlarmId = 0;
@@ -363,92 +363,92 @@ public class Process implements IFramework
 		this.maxY = Float.NaN;
 	}
 	
-	// ============================= VELOCITY =========================== \\
+	// ============================= ACCELERATION =========================== \\
 	
-	public float getVelocityX()
+	public float getAccelerationX()
 	{
-		return this.velocityX;
+		return this.accelerationX;
 	}
 	
-	public void addVelocityX(float value)
+	public void addAccelerationX(float value)
 	{
-		setVelocityX(this.velocityX + value);
+		setAccelerationX(this.accelerationX + value);
 	}
 	
-	public void setVelocityX(float velocityX)
+	public void setAccelerationX(float accelerationX)
 	{
-		this.velocityX = velocityX;
+		this.accelerationX = accelerationX;
 		
-		if (!Float.isNaN(this.maxVelocityX))
+		if (!Float.isNaN(this.maxAccelerationX))
 		{
-			if (this.velocityX > this.maxVelocityX)
+			if (this.accelerationX > this.maxAccelerationX)
 			{
-				this.velocityX = this.maxVelocityX;
+				this.accelerationX = this.maxAccelerationX;
 			}
 			
-			if (this.velocityX < -this.maxVelocityX)
+			if (this.accelerationX < -this.maxAccelerationX)
 			{
-				this.velocityX = -this.maxVelocityX;
+				this.accelerationX = -this.maxAccelerationX;
 			}
 		}
 	}
 	
-	public float getVelocityY()
+	public float getAccelerationY()
 	{
-		return this.velocityY;
+		return this.accelerationY;
 	}
 	
-	public void addVelocityY(float value)
+	public void addAccelerationY(float value)
 	{
-		setVelocityY(this.velocityY + value);
+		setAccelerationY(this.accelerationY + value);
 	}
 	
-	public void setVelocityY(float velocityY)
+	public void setAccelerationY(float accelerationY)
 	{
-		this.velocityY = velocityY;
+		this.accelerationY = accelerationY;
 		
-		if (!Float.isNaN(this.maxVelocityY))
+		if (!Float.isNaN(this.maxAccelerationY))
 		{
-			if (this.velocityY > this.maxVelocityY)
+			if (this.accelerationY > this.maxAccelerationY)
 			{
-				this.velocityY = this.maxVelocityY;
+				this.accelerationY = this.maxAccelerationY;
 			}
 			
-			if (this.velocityY < -this.maxVelocityY)
+			if (this.accelerationY < -this.maxAccelerationY)
 			{
-				this.velocityY = -this.maxVelocityY;
+				this.accelerationY = -this.maxAccelerationY;
 			}
 		}
 	}
 	
-	public float getMaxVelocityX()
+	public float getMaxAccelerationX()
 	{
-		return this.maxVelocityX;
+		return this.maxAccelerationX;
 	}
 	
-	public void setMaxVelocityX(float maxVelocityX)
+	public void setMaxAccelerationX(float maxAccelerationX)
 	{
-		this.maxVelocityX = maxVelocityX;
+		this.maxAccelerationX = maxAccelerationX;
 	}
 	
-	public void removeMaxVelocityX()
+	public void removeMaxAccelerationX()
 	{
-		this.maxVelocityX = Float.NaN;
+		this.maxAccelerationX = Float.NaN;
 	}
 	
-	public float getMaxVelocityY()
+	public float getMaxAccelerationY()
 	{
-		return this.maxVelocityY;
+		return this.maxAccelerationY;
 	}
 	
-	public void setMaxVelocityY(float maxVelocityY)
+	public void setMaxAccelerationY(float maxAccelerationY)
 	{
-		this.maxVelocityY = maxVelocityY;
+		this.maxAccelerationY = maxAccelerationY;
 	}
 	
-	public void removeMaxVelocityY()
+	public void removeMaxAccelerationY()
 	{
-		this.maxVelocityY = Float.NaN;
+		this.maxAccelerationY = Float.NaN;
 	}
 	
 	// ============================= SCREEN =========================== \\
