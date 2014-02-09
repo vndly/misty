@@ -1,12 +1,12 @@
-package com.kernel;
+package com.misty.kernel;
 
 import android.graphics.Bitmap;
 import android.util.SparseArray;
-import com.graphics.Image;
-import com.input.rotation.OnRotationChange;
-import com.input.touch.OnTouchScreen;
-import com.kernel.Alarm.OnAlarmRing;
-import com.text.Text;
+import com.misty.graphics.Image;
+import com.misty.input.rotation.OnRotationChange;
+import com.misty.input.touch.OnTouchScreen;
+import com.misty.kernel.Alarm.OnAlarmRing;
+import com.misty.text.Text;
 
 public class Process implements IFramework
 {
@@ -16,7 +16,9 @@ public class Process implements IFramework
 	// states
 	public enum State
 	{
-		AWAKE, FROZEN, SLEEPING
+		AWAKE,
+		FROZEN,
+		SLEEPING
 	}
 	
 	private State state;

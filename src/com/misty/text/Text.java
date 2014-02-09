@@ -1,4 +1,4 @@
-package com.text;
+package com.misty.text;
 
 public class Text
 {

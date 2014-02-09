@@ -1,6 +1,6 @@
-package com.kernel;
+package com.misty.kernel;
 
-import com.text.Text;
+import com.misty.text.Text;
 
 public interface IFramework
 {

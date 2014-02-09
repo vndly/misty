@@ -1,4 +1,4 @@
-package com.misty;
+package com.misty.kernel;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,10 +8,9 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import com.graphics.RenderView;
-import com.kernel.Engine;
-import com.kernel.IFramework;
-import com.text.Text;
+import com.misty.R;
+import com.misty.graphics.RenderView;
+import com.misty.text.Text;
 
 public abstract class Misty extends Activity implements IFramework
 {

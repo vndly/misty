@@ -1,4 +1,4 @@
-package com.input.rotation;
+package com.misty.input.rotation;
 
 public interface OnRotationChange
 {

@@ -1,9 +1,9 @@
-package com.graphics;
+package com.misty.graphics;
 
 import android.content.Context;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import com.misty.Misty;
+import com.misty.kernel.Misty;
 
 public class RenderView extends SurfaceView implements SurfaceHolder.Callback
 {

@@ -1,4 +1,4 @@
-package com.text;
+package com.misty.text;
 
 import android.graphics.Paint;
 import android.graphics.Typeface;

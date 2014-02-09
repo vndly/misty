@@ -1,4 +1,4 @@
-package com.kernel;
+package com.misty.kernel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +26,10 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import com.graphics.Collision;
-import com.sound.AudioManger;
-import com.text.Font;
-import com.text.Text;
+import com.misty.graphics.Collision;
+import com.misty.sound.AudioManger;
+import com.misty.text.Font;
+import com.misty.text.Text;
 
 @SuppressWarnings("deprecation")
 public class Engine extends Thread implements IFramework, SensorEventListener
@@ -40,7 +40,9 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 	// engine status
 	private enum EngineStatus
 	{
-		RUNNING, PAUSED, FINISHED
+		RUNNING,
+		PAUSED,
+		FINISHED
 	};
 	
 	private EngineStatus running = EngineStatus.RUNNING;
@@ -192,10 +194,10 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 	{
 		WindowManager wm = (WindowManager)this.context.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
-		Point size = new Point();
-		display.getSize(size);
+		int width = display.getWidth();
+		int height = display.getHeight();
 		
-		return size;
+		return new Point(width, height);
 	}
 	
 	@Override

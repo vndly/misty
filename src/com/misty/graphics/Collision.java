@@ -1,13 +1,12 @@
-package com.graphics;
+package com.misty.graphics;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
-import com.kernel.Process;
 
 public class Collision
 {
-	public static boolean hit(Process processA, Process processB)
+	public static boolean hit(com.misty.kernel.Process processA, com.misty.kernel.Process processB)
 	{
 		boolean result = false;
 		
