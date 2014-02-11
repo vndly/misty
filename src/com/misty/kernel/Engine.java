@@ -37,6 +37,8 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 	private final int fps;
 	private final int time;
 	
+	private final static int MAX_FRAME_SKIPS = 5;
+	
 	// engine status
 	private enum EngineStatus
 	{
@@ -83,8 +85,8 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 	private final List<Text> texts = new ArrayList<Text>();
 	
 	// debug
-	private long totalTime = 0;
-	private long times = 1;
+	private int totalTime = 0;
+	private int times = 1;
 	
 	public Engine(int fps, Context context, Class<?> soundClass, SurfaceView surfaceView, ImageView background, SensorManager sensorManager)
 	{
@@ -274,37 +276,73 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 	public void run()
 	{
 		this.running = EngineStatus.RUNNING;
-		long consumed = 0;
+		int consumed = 0;
+		int framesSkipped = 0;
 		
 		while (this.running != EngineStatus.FINISHED)
 		{
 			if (this.running == EngineStatus.RUNNING)
 			{
-				consumed = update(this.time);
+				framesSkipped = 0;
 				
-				this.totalTime += consumed / 1000000;
+				// ~ 20 us
+				Process[] list = getProcessList();
+				
+				consumed = update(list, this.time);
+				
+				this.totalTime += consumed;
 				this.times++;
 				
-				if (this.time > consumed)
+				int sleepTime = this.time - consumed;
+				
+				if (sleepTime > 0)
 				{
 					try
 					{
-						Thread.sleep(this.time - consumed);
+						Thread.sleep(sleepTime);
 					}
 					catch (InterruptedException e)
 					{
 						e.printStackTrace();
 					}
 				}
+				else
+				{
+					while ((sleepTime < 0) && (framesSkipped < Engine.MAX_FRAME_SKIPS))
+					{
+						runProcesses(list, this.time);
+						sleepTime += this.time;
+						framesSkipped++;
+					}
+				}
 			}
 		}
 	}
 	
-	private long update(int time)
+	private int update(Process[] list, int time)
 	{
 		long start = System.nanoTime();
 		
-		// ~ 20 us
+		// ~ 600 us
+		runProcesses(list, time);
+		
+		// ~ 16 ms
+		drawProcesses(list);
+		
+		return (int)(System.nanoTime() - start) / 1000000;
+	}
+	
+	private void runProcesses(Process[] list, int time)
+	{
+		// ~ 400 us
+		updateProcesses(list, time);
+		
+		// ~ 200 us
+		updateCollisions(list);
+	}
+	
+	private Process[] getProcessList()
+	{
 		int size = this.processes.size();
 		Process[] list = new Process[size];
 		for (int i = 0; i < size; i++)
@@ -312,16 +350,7 @@ public class Engine extends Thread implements IFramework, SensorEventListener
 			list[i] = this.processes.valueAt(i);
 		}
 		
-		// ~ 350 us
-		updateProcesses(list, time);
-		
-		// ~ 200 us
-		updateCollisions(list);
-		
-		// ~ 16 ms
-		drawProcesses(list);
-		
-		return System.nanoTime() - start;
+		return list;
 	}
 	
 	private void updateProcesses(Process[] list, int time)
