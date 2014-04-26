@@ -1,66 +1,57 @@
 package com.misty.kernel;
 
-import android.graphics.Bitmap;
+import java.util.List;
+import java.util.Random;
+import javax.microedition.khronos.opengles.GL10;
 import android.util.SparseArray;
-import com.misty.graphics.Image;
-import com.misty.input.rotation.OnRotationChange;
-import com.misty.input.touch.OnTouchScreen;
+import com.misty.graphics.Camera;
+import com.misty.graphics.Sprite;
+import com.misty.input.TouchEvent;
 import com.misty.kernel.Alarm.OnAlarmRing;
-import com.misty.text.Text;
 
-public class Process implements IFramework
+public class Process
 {
-	private int id;
+	public int id;
 	private final Engine engine;
+	private State state = State.AWAKE;
+	public final boolean isDynamic;
+	public final boolean isCollisionable;
+	public final Camera camera;
 	
 	// states
 	public enum State
 	{
-		AWAKE,
-		FROZEN,
-		SLEEPING
+		AWAKE, FROZEN, SLEEPING
 	}
 	
-	private State state;
-	
-	// input
-	private OnRotationChange rotationListener;
-	private OnTouchScreen touchScreenListener;
-	
-	// image
-	private Image image;
-	private boolean visible = true;
+	// sprite
+	private Sprite sprite;
+	private final SparseArray<Sprite> sprites = new SparseArray<Sprite>();
+	public boolean visible = true;
 	
 	// position
-	private float x = 0;
-	private float minX = Float.NaN;
-	private float maxX = Float.NaN;
-	private float y = 0;
-	private float minY = Float.NaN;
-	private float maxY = Float.NaN;
+	public float x = 0;
+	public float y = 0;
+	public int z = 0;
 	
-	// acceleration
-	private float accelerationX = 0;
-	private float accelerationY = 0;
-	private float maxAccelerationX = Float.NaN;
-	private float maxAccelerationY = Float.NaN;
+	// size
+	public int width = 0;
+	public int height = 0;
 	
 	// alarm
-	private int lastAlarmId = 0;
+	private int nextAlarmId = 1;
 	private final SparseArray<Alarm> alarms = new SparseArray<Alarm>();
 	
-	public Process()
+	public Process(boolean isDynamic, boolean isCollisionable)
 	{
+		this.isDynamic = isDynamic;
+		this.isCollisionable = isCollisionable;
+		
 		this.engine = Engine.getInstance();
-		this.state = State.AWAKE;
+		this.camera = this.engine.camera;
 	}
 	
-	public int getId()
-	{
-		return this.id;
-	}
-	
-	public void create()
+	public void start()
 	{
 		this.id = this.engine.addProcess(this);
 	}
@@ -71,108 +62,90 @@ public class Process implements IFramework
 		this.alarms.clear();
 	}
 	
-	public final void process(int time)
+	public final void process(float delta)
 	{
-		if (this.alarms.size() > 0)
+		int size = this.alarms.size();
+		
+		if (size > 0)
 		{
-			for (int i = 0; i < this.alarms.size(); i++)
+			for (int i = 0; i < size; i++)
 			{
 				Alarm alarm = this.alarms.valueAt(i);
 				
-				if (alarm.step())
+				if (alarm.step(delta))
 				{
-					this.alarms.remove(alarm.getId());
+					this.alarms.remove(alarm.id);
 				}
 			}
 		}
+		
 		if (isAwake())
 		{
-			update(time);
+			update(delta);
 		}
 	}
 	
-	public void update(int time)
+	public void update(float delta)
 	{
 	}
 	
-	@Override
-	public int random(int min, int max)
+	// ============================= SPRITE =========================== \\
+	
+	public Sprite getSprite()
 	{
-		return this.engine.random(min, max);
+		return this.sprite;
 	}
 	
-	// ============================= IMAGE =========================== \\
-	
-	private int getImageResource(String name)
+	public void render(GL10 screen)
 	{
-		return this.engine.getResources().getIdentifier(name, "drawable", this.engine.getPackageName());
+		if (hasSprite() && this.visible && (!isSpeeling()))
+		{
+			this.sprite.render(screen, this.x, this.y);
+		}
 	}
 	
-	protected void setImage(int resourceId)
+	public void setSprite(int resourceId)
 	{
-		this.image = new Image(this.engine.getResources(), resourceId);
+		if (this.sprite == null)
+		{
+			createSprite(resourceId);
+		}
+		else
+		{
+			if (this.sprite.id != resourceId)
+			{
+				Sprite cachedSprite = this.sprites.get(resourceId);
+				
+				if (cachedSprite != null)
+				{
+					this.sprite = cachedSprite;
+					this.width = this.sprite.texture.width;
+					this.height = this.sprite.texture.height;
+				}
+				else
+				{
+					createSprite(resourceId);
+				}
+			}
+		}
 	}
 	
-	protected void setImage(int resourceId, boolean visible)
+	public void setSprite(String name)
 	{
-		setImage(resourceId);
-		setVisible(visible);
+		setSprite(this.engine.getResourceId(name));
 	}
 	
-	protected void setImage(String name, boolean visible)
+	public boolean hasSprite()
 	{
-		setImage(getImageResource(name));
-		setVisible(visible);
+		return (this.sprite != null);
 	}
 	
-	public Image getImage()
+	private void createSprite(int resourceId)
 	{
-		return this.image;
-	}
-	
-	public Bitmap getBitmap()
-	{
-		return this.image.get();
-	}
-	
-	public void rotate(float angle)
-	{
-		this.image.rotate(angle);
-	}
-	
-	public int getImageResourceId()
-	{
-		return this.image.getResourceId();
-	}
-	
-	public int getImageWidth()
-	{
-		return (hasImage() ? this.image.getWidth() : 0);
-	}
-	
-	public int getImageHeight()
-	{
-		return (hasImage() ? this.image.getHeight() : 0);
-	}
-	
-	public boolean hasImage()
-	{
-		return (this.image != null);
-	}
-	
-	public boolean isCollisionable()
-	{
-		return hasImage() && isVisible();
-	}
-	
-	public boolean isVisible()
-	{
-		return this.visible;
-	}
-	
-	public void setVisible(boolean visible)
-	{
-		this.visible = visible;
+		this.sprite = new Sprite(resourceId);
+		this.width = this.sprite.texture.width;
+		this.height = this.sprite.texture.height;
+		this.sprites.put(resourceId, this.sprite);
 	}
 	
 	// ============================= GEOMETRY =========================== \\
@@ -187,7 +160,14 @@ public class Process implements IFramework
 		return (float)(Math.sqrt(Math.pow(this.x - process.x, 2) + Math.pow(this.y - process.y, 2)));
 	}
 	
-	// ============================= SPACE =========================== \\
+	public int random(int min, int max)
+	{
+		Random random = new Random();
+		
+		return random.nextInt(max - min) + min;
+	}
+	
+	// ============================= STATE =========================== \\
 	
 	public boolean isAwake()
 	{
@@ -206,330 +186,78 @@ public class Process implements IFramework
 	
 	public void wakeUp()
 	{
-		setVisible(true);
+		this.visible = true;
 		this.state = State.AWAKE;
 	}
 	
 	public void freeze()
 	{
-		setVisible(true);
+		this.visible = true;
 		this.state = State.FROZEN;
 	}
 	
 	public void sleep()
 	{
-		setVisible(false);
+		this.visible = false;
 		this.state = State.SLEEPING;
 	}
 	
 	// ============================= ALARMS =========================== \\
 	
-	public int setAlarm(OnAlarmRing listener, int delay)
+	public int setAlarm(OnAlarmRing listener, int milliseconds)
 	{
-		this.lastAlarmId++;
-		this.alarms.put(this.lastAlarmId, new Alarm(this.lastAlarmId, listener, delay));
-		return this.lastAlarmId;
-	}
-	
-	// ============================ SCREEN ========================== \\
-	
-	@Override
-	public void addText(Text text)
-	{
-		this.engine.addText(text);
-	}
-	
-	@Override
-	public void removeText(Text text)
-	{
-		this.engine.removeText(text);
+		int id = this.nextAlarmId++;
+		
+		this.alarms.put(id, new Alarm(id, listener, milliseconds));
+		
+		return id;
 	}
 	
 	// ============================= COLLISION =========================== \\
 	
-	public void onCollision(Process porcess)
+	public List<Process> getCollisions(Class<?> classes)
 	{
-	}
-	
-	// ============================= POSITION =========================== \\
-	
-	public int getX()
-	{
-		return (int)this.x;
-	}
-	
-	public void addX(float value)
-	{
-		setX(this.x + value);
-	}
-	
-	public void setX(float x)
-	{
-		this.x = x;
-		
-		if ((!Float.isNaN(this.minX)) && (this.x < this.minX))
-		{
-			this.x = this.minX;
-		}
-		
-		if ((!Float.isNaN(this.maxX)) && (this.x > this.maxX))
-		{
-			this.x = this.maxX;
-		}
-	}
-	
-	public float getMinX()
-	{
-		return this.minX;
-	}
-	
-	public void setMinX(float minX)
-	{
-		this.minX = minX;
-	}
-	
-	public void removeMinX()
-	{
-		this.minX = Float.NaN;
-	}
-	
-	public float getMaxX()
-	{
-		return this.maxX;
-	}
-	
-	public void setMaxX(float maxX)
-	{
-		this.maxX = maxX;
-	}
-	
-	public void removeMaxX()
-	{
-		this.maxX = Float.NaN;
-	}
-	
-	public int getY()
-	{
-		return (int)this.y;
-	}
-	
-	public void addY(float value)
-	{
-		setY(this.y + value);
-	}
-	
-	public void setY(float y)
-	{
-		this.y = y;
-		
-		if ((!Float.isNaN(this.minY)) && (this.y < this.minY))
-		{
-			this.y = this.minY;
-		}
-		
-		if ((!Float.isNaN(this.maxY)) && (this.y > this.maxY))
-		{
-			this.y = this.maxY;
-		}
-	}
-	
-	public float getMinY()
-	{
-		return this.minY;
-	}
-	
-	public void setMinY(float minY)
-	{
-		this.minY = minY;
-	}
-	
-	public void removeMinY()
-	{
-		this.minY = Float.NaN;
-	}
-	
-	public float getMaxY()
-	{
-		return this.maxY;
-	}
-	
-	public void setMaxY(float maxY)
-	{
-		this.maxY = maxY;
-	}
-	
-	public void removeMaxY()
-	{
-		this.maxY = Float.NaN;
-	}
-	
-	// ============================= ACCELERATION =========================== \\
-	
-	public float getAccelerationX()
-	{
-		return this.accelerationX;
-	}
-	
-	public void addAccelerationX(float value)
-	{
-		setAccelerationX(this.accelerationX + value);
-	}
-	
-	public void setAccelerationX(float accelerationX)
-	{
-		this.accelerationX = accelerationX;
-		
-		if (!Float.isNaN(this.maxAccelerationX))
-		{
-			if (this.accelerationX > this.maxAccelerationX)
-			{
-				this.accelerationX = this.maxAccelerationX;
-			}
-			
-			if (this.accelerationX < -this.maxAccelerationX)
-			{
-				this.accelerationX = -this.maxAccelerationX;
-			}
-		}
-	}
-	
-	public float getAccelerationY()
-	{
-		return this.accelerationY;
-	}
-	
-	public void addAccelerationY(float value)
-	{
-		setAccelerationY(this.accelerationY + value);
-	}
-	
-	public void setAccelerationY(float accelerationY)
-	{
-		this.accelerationY = accelerationY;
-		
-		if (!Float.isNaN(this.maxAccelerationY))
-		{
-			if (this.accelerationY > this.maxAccelerationY)
-			{
-				this.accelerationY = this.maxAccelerationY;
-			}
-			
-			if (this.accelerationY < -this.maxAccelerationY)
-			{
-				this.accelerationY = -this.maxAccelerationY;
-			}
-		}
-	}
-	
-	public float getMaxAccelerationX()
-	{
-		return this.maxAccelerationX;
-	}
-	
-	public void setMaxAccelerationX(float maxAccelerationX)
-	{
-		this.maxAccelerationX = maxAccelerationX;
-	}
-	
-	public void removeMaxAccelerationX()
-	{
-		this.maxAccelerationX = Float.NaN;
-	}
-	
-	public float getMaxAccelerationY()
-	{
-		return this.maxAccelerationY;
-	}
-	
-	public void setMaxAccelerationY(float maxAccelerationY)
-	{
-		this.maxAccelerationY = maxAccelerationY;
-	}
-	
-	public void removeMaxAccelerationY()
-	{
-		this.maxAccelerationY = Float.NaN;
+		return this.engine.getCollisions(this, classes);
 	}
 	
 	// ============================= SCREEN =========================== \\
 	
-	@Override
 	public int getScreenWidth()
 	{
 		return this.engine.getScreenWidth();
 	}
 	
-	@Override
 	public int getScreenHeight()
 	{
 		return this.engine.getScreenHeight();
 	}
 	
-	// ====================== BACKGROUND IMAGE ======================== \\
+	// ============================= AUDIO =========================== \\
 	
-	@Override
-	public void setBackgroundImage(int resourceId)
-	{
-		this.engine.setBackgroundImage(resourceId);
-	}
-	
-	@Override
-	public void removeBackgroundImage()
-	{
-		this.engine.removeBackgroundImage();
-	}
-	
-	// ======================== SOUND & MUSIC ======================= \\
-	
-	@Override
 	public void playSound(int soundId)
 	{
 		this.engine.playSound(soundId);
 	}
 	
-	@Override
 	public void playMusic(int musicId)
 	{
 		this.engine.playMusic(musicId);
 	}
 	
-	@Override
 	public void stopMusic()
 	{
 		this.engine.stopMusic();
 	}
 	
-	// ============================= ROTATION =========================== \\
+	// ============================= INPUT ============================= \\
 	
-	protected void setOnRotationChange(OnRotationChange listener)
+	public List<TouchEvent> getTouchEvents()
 	{
-		this.rotationListener = listener;
+		return this.engine.getTouchEvents();
 	}
 	
-	protected OnRotationChange getOnRotationChange()
+	public boolean isPressed(int left, int right, int bottom, int top)
 	{
-		return this.rotationListener;
-	}
-	
-	public boolean hasRotationListener()
-	{
-		return (this.rotationListener != null);
-	}
-	
-	// ============================= TOUCH SCREEN =========================== \\
-	
-	protected void setOnTouchScreen(OnTouchScreen listener)
-	{
-		this.touchScreenListener = listener;
-	}
-	
-	protected OnTouchScreen getOnTouchScreen()
-	{
-		return this.touchScreenListener;
-	}
-	
-	public boolean hasTouchScreenListener()
-	{
-		return (this.touchScreenListener != null);
+		return this.engine.isPressed(left, right, bottom, top);
 	}
 }

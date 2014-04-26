@@ -2,33 +2,28 @@ package com.misty.kernel;
 
 public class Alarm
 {
-	private final int id;
+	public final int id;
 	private final OnAlarmRing listener;
-	private final long delay;
-	private long limit;
+	private final long time;
+	private float total = 0;
 	
-	public Alarm(int id, OnAlarmRing listener, long delay)
+	public Alarm(int id, OnAlarmRing listener, long time)
 	{
 		this.id = id;
 		this.listener = listener;
-		this.delay = delay;
-		this.limit = System.currentTimeMillis() + delay;
+		this.time = time;
+		this.total = 0;
 	}
 	
-	public int getId()
-	{
-		return this.id;
-	}
-	
-	public boolean step()
+	public boolean step(float delta)
 	{
 		boolean remove = false;
-		long current = System.currentTimeMillis();
+		this.total += (delta * 1000f);
 		
-		if (current >= this.limit)
+		if (this.total >= this.time)
 		{
 			remove = (!this.listener.onAlarmRing());
-			this.limit = current + this.delay;
+			this.total -= this.time;
 		}
 		
 		return remove;
