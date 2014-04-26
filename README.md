@@ -1,4 +1,4 @@
-misty
+Misty
 =====
 
-Misty is a framework to develop Android games
+Misty is a framework to develop Android games.
