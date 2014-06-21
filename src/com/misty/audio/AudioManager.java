@@ -54,7 +54,7 @@ public class AudioManager
 		}
 	}
 	
-	private void playbackSound(int resourceId)
+	public void playbackSound(int resourceId)
 	{
 		this.soundPool.play(resourceId, 0.5f, 0.5f, 1, 0, 1f);
 	}

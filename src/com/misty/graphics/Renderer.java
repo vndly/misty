@@ -21,7 +21,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 	private enum RendererStatus
 	{
 		RUNNING, IDLE, PAUSED, FINISHED
-	};
+	}
 	
 	public Renderer(Engine engine, ScreenResolution resolution)
 	{

@@ -85,6 +85,7 @@ public class Process
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	public void update(float delta)
 	{
 	}
