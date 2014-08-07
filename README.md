@@ -3,8 +3,8 @@ Misty
 
 Misty is a framework to develop Android games.
 
-General
--------
+Description
+-----------
 
 Misty is very similar to other frameworks like DIV or the Fenix Project, which makes it very easy to develop games.
 
