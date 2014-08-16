@@ -163,8 +163,8 @@ public class CollisionGrid
 	{
 		boolean result = false;
 		
-		Sprite spriteA = processA.getSprite();
-		Sprite spriteB = processB.getSprite();
+		Texture spriteA = processA.sprite;
+		Texture spriteB = processB.sprite;
 		
 		// TODO: implement own rectangle intersection
 		if ((spriteA != null) && (spriteB != null))
@@ -175,13 +175,13 @@ public class CollisionGrid
 			int xB = (int)processB.x;
 			int yB = (int)processB.y;
 			
-			Rect rectA = new Rect(xA, yA, spriteA.texture.width + xA, spriteA.texture.height + yA);
-			Rect rectB = new Rect(xB, yB, spriteB.texture.width + xB, spriteB.texture.height + yB);
+			Rect rectA = new Rect(xA, yA, spriteA.width + xA, spriteA.height + yA);
+			Rect rectB = new Rect(xB, yB, spriteB.width + xB, spriteB.height + yB);
 			
 			if (rectA.intersect(rectB))
 			{
-				Bitmap bitmapA = spriteA.texture.bitmap;
-				Bitmap bitmapB = spriteB.texture.bitmap;
+				Bitmap bitmapA = spriteA.bitmap;
+				Bitmap bitmapB = spriteB.bitmap;
 				
 				int intersectionWidth = rectA.width();
 				int intersectionHeight = rectA.height();
