@@ -2,6 +2,7 @@ package com.misty.graphics;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+import android.opengl.GLSurfaceView;
 import com.misty.kernel.Engine;
 
 public class Renderer implements android.opengl.GLSurfaceView.Renderer
@@ -11,11 +12,12 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 
 	private long startTime;
 	private final Engine engine;
+	private final GLSurfaceView screen;
 	private final ScreenResolution resolution;
 
 	// state
 	private RendererStatus state = RendererStatus.RUNNING;
-	private final Object stateChanged = new Object();
+	private final Object stateChangedLock = new Object();
 
 	// engine status
 	private enum RendererStatus
@@ -23,11 +25,13 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		RUNNING, IDLE, PAUSED, FINISHED
 	}
 
-	public Renderer(Engine engine, ScreenResolution resolution)
+	public Renderer(Engine engine, GLSurfaceView screen, ScreenResolution resolution)
 	{
 		this.engine = engine;
+		this.screen = screen;
 		this.resolution = resolution;
 		this.startTime = System.nanoTime();
+
 		engine.setRenderer(this, resolution);
 	}
 
@@ -36,7 +40,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 	{
 		RendererStatus status = null;
 
-		synchronized (this.stateChanged)
+		synchronized (this.stateChangedLock)
 		{
 			status = this.state;
 		}
@@ -51,13 +55,12 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 
 			this.engine.update(delta, screen);
 		}
-
-		if ((status == RendererStatus.PAUSED) || (status == RendererStatus.FINISHED))
+		else if ((status == RendererStatus.PAUSED) || (status == RendererStatus.FINISHED))
 		{
-			synchronized (this.stateChanged)
+			synchronized (this.stateChangedLock)
 			{
 				this.state = RendererStatus.IDLE;
-				this.stateChanged.notifyAll();
+				this.stateChangedLock.notifyAll();
 			}
 		}
 	}
@@ -83,7 +86,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		screen.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 		screen.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 
-		synchronized (this.stateChanged)
+		synchronized (this.stateChangedLock)
 		{
 			this.state = RendererStatus.RUNNING;
 			Texture.unloadTextures();
@@ -92,7 +95,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 
 	public void pause(boolean finishing)
 	{
-		synchronized (this.stateChanged)
+		synchronized (this.stateChangedLock)
 		{
 			if (finishing)
 			{
@@ -107,14 +110,26 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 			{
 				try
 				{
-					this.stateChanged.wait();
+					this.stateChangedLock.wait();
 					break;
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
 				}
 			}
+		}
+		
+		if (this.screen != null)
+		{
+			this.screen.onPause();
+		}
+	}
+
+	public void resume()
+	{
+		if (this.screen != null)
+		{
+			this.screen.onResume();
 		}
 	}
 }
