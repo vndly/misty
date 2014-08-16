@@ -16,7 +16,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 	private final ScreenResolution resolution;
 
 	// state
-	private RendererStatus state = RendererStatus.RUNNING;
+	private RendererStatus state = null;
 	private final Object stateChangedLock = new Object();
 
 	// engine status
@@ -85,43 +85,47 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		screen.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		screen.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 		screen.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-
+		
 		synchronized (this.stateChangedLock)
 		{
 			this.state = RendererStatus.RUNNING;
-			Texture.unloadTextures();
 		}
+
+		Texture.reloadTextures(screen);
 	}
 
 	public void pause(boolean finishing)
 	{
 		synchronized (this.stateChangedLock)
 		{
-			if (finishing)
+			if (this.state == RendererStatus.RUNNING)
 			{
-				this.state = RendererStatus.FINISHED;
-			}
-			else
-			{
-				this.state = RendererStatus.PAUSED;
+				if (finishing)
+				{
+					this.state = RendererStatus.FINISHED;
+				}
+				else
+				{
+					this.state = RendererStatus.PAUSED;
+				}
+				
+				while (true)
+				{
+					try
+					{
+						this.stateChangedLock.wait();
+						break;
+					}
+					catch (Exception e)
+					{
+					}
+				}
 			}
 
-			while (true)
+			if (this.screen != null)
 			{
-				try
-				{
-					this.stateChangedLock.wait();
-					break;
-				}
-				catch (Exception e)
-				{
-				}
+				this.screen.onPause();
 			}
-		}
-		
-		if (this.screen != null)
-		{
-			this.screen.onPause();
 		}
 	}
 

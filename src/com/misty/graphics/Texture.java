@@ -21,12 +21,12 @@ public class Texture
 	private int textureId;
 
 	public final Bitmap bitmap;
-	private boolean textureLoaded = false; // TODO: mark as false if the activity is paused
+	private boolean textureInitialized = false;
 
 	private static Resources resources;
-	private static SparseArray<Texture> textures = new SparseArray<Texture>();
+	private static SparseArray<Texture> loadedTextures = new SparseArray<Texture>();
 
-	public Texture(InputStream input)
+	private Texture(InputStream input)
 	{
 		this.bitmap = BitmapFactory.decodeStream(input);
 
@@ -70,46 +70,58 @@ public class Texture
 		this.textureBuffer.flip();
 	}
 
+	public static void initialize(Resources resources)
+	{
+		Texture.resources = resources;
+	}
+
 	public static Texture getTexture(int resourceId)
 	{
-		Texture result = Texture.textures.get(resourceId);
+		Texture result = Texture.loadedTextures.get(resourceId);
 
 		if (result == null)
 		{
-			InputStream input = Texture.resources.openRawResource(resourceId);
-
-			result = new Texture(input);
-			Texture.textures.put(resourceId, result);
+			InputStream input = null;
 
 			try
 			{
-				input.close();
+				input = Texture.resources.openRawResource(resourceId);
+				result = new Texture(input);
+				Texture.loadedTextures.put(resourceId, result);
 			}
 			catch (Exception e)
 			{
+			}
+			finally
+			{
+				if (input != null)
+				{
+					try
+					{
+						input.close();
+					}
+					catch (Exception e)
+					{
+					}
+				}
 			}
 		}
 
 		return result;
 	}
 
-	public static void unloadTextures()
+	public static void reloadTextures(GL10 screen)
 	{
-		int size = Texture.textures.size();
+		int size = Texture.loadedTextures.size();
 
 		for (int i = 0; i < size; i++)
 		{
-			Texture texture = Texture.textures.valueAt(i);
-			texture.unload();
+			Texture texture = Texture.loadedTextures.valueAt(i);
+			texture.initializeTexture(screen);
 		}
 	}
 
-	public static void initialize(Resources resources)
-	{
-		Texture.resources = resources;
-	}
-
-	private void loadGLTexture(GL10 screen)
+	private void initializeTexture(GL10 screen)
 	{
 		int[] textureArray = new int[1];
 
@@ -131,10 +143,10 @@ public class Texture
 
 	public void render(GL10 screen, float x, float y)
 	{
-		if (!this.textureLoaded)
+		if (!this.textureInitialized)
 		{
-			this.textureLoaded = true;
-			loadGLTexture(screen);
+			this.textureInitialized = true;
+			initializeTexture(screen);
 		}
 
 		// move the origin of the sprite
@@ -154,10 +166,5 @@ public class Texture
 
 		// draw the vertices as triangle strip
 		screen.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
-	}
-
-	public void unload()
-	{
-		this.textureLoaded = false;
 	}
 }
