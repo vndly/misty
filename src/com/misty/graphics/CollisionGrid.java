@@ -163,8 +163,8 @@ public class CollisionGrid
 	{
 		boolean result = false;
 		
-		Texture spriteA = processA.sprite;
-		Texture spriteB = processB.sprite;
+		Texture spriteA = processA.texture;
+		Texture spriteB = processB.texture;
 		
 		// TODO: implement own rectangle intersection
 		if ((spriteA != null) && (spriteB != null))

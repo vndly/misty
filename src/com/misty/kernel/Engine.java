@@ -19,7 +19,6 @@ import com.misty.input.TouchEvent;
 public class Engine
 {
 	private static Engine instance;
-	private final Context context;
 
 	// processes
 	private int nextProcessId = 1;
@@ -50,25 +49,18 @@ public class Engine
 
 		this.audioManager = new AudioManager(context);
 
-		this.context = context;
-
 		for (int i = 0; i < Engine.TOUCH_EVENT_SIZE; i++)
 		{
 			this.touchEvents[i] = new TouchEvent();
 		}
 
-		Texture.initialize(context.getResources());
+		Texture.initialize(context.getAssets());
 	}
 
 	public void setRenderer(Renderer renderer, ScreenResolution resolution)
 	{
 		this.renderer = renderer;
 		this.camera = new Camera(resolution);
-	}
-
-	public int getResourceId(String name)
-	{
-		return this.context.getResources().getIdentifier(name, "drawable", this.context.getPackageName());
 	}
 
 	public static Engine getInstance()
@@ -181,14 +173,14 @@ public class Engine
 
 	// ========================== AUDIO ========================== \\
 
-	public void playSound(int soundId)
+	public void playSound(String soundPath)
 	{
-		this.audioManager.playSound(soundId);
+		this.audioManager.playSound(soundPath);
 	}
 
-	public void playMusic(int musicId)
+	public void playMusic(String musicPath)
 	{
-		this.audioManager.playAudio(musicId);
+		this.audioManager.playAudio(musicPath);
 	}
 
 	public void stopMusic()
