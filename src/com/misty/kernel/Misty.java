@@ -15,6 +15,7 @@ import com.misty.graphics.ScreenResolution;
 public abstract class Misty extends Activity implements OnTouchListener
 {
 	private Engine engine;
+	private GLSurfaceView screen;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -29,13 +30,13 @@ public abstract class Misty extends Activity implements OnTouchListener
 		
 		this.engine = new Engine(this);
 		
-		GLSurfaceView screen = new GLSurfaceView(this);
-		screen.setEGLContextClientVersion(2);
-		Renderer renderer = new Renderer(this, this.engine, screen, getResolution());
-		screen.setRenderer(renderer);
-		screen.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-		screen.setOnTouchListener(this);
-		setContentView(screen);
+		this.screen = new GLSurfaceView(this);
+		this.screen.setEGLContextClientVersion(2);
+		Renderer renderer = new Renderer(this, this.engine, getResolution());
+		this.screen.setRenderer(renderer);
+		this.screen.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+		this.screen.setOnTouchListener(this);
+		setContentView(this.screen);
 		
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		
@@ -49,7 +50,10 @@ public abstract class Misty extends Activity implements OnTouchListener
 	@Override
 	public boolean onTouch(View view, MotionEvent event)
 	{
-		this.engine.onTouch(event);
+		if (this.engine != null)
+		{
+			this.engine.onTouch(event);
+		}
 		
 		return true;
 	}
@@ -63,6 +67,11 @@ public abstract class Misty extends Activity implements OnTouchListener
 		{
 			this.engine.resume();
 		}
+
+		if (this.screen != null)
+		{
+			this.screen.onResume();
+		}
 	}
 	
 	@Override
@@ -73,6 +82,11 @@ public abstract class Misty extends Activity implements OnTouchListener
 		if (this.engine != null)
 		{
 			this.engine.pause(isFinishing());
+		}
+
+		if (this.screen != null)
+		{
+			this.screen.onPause();
 		}
 	}
 	

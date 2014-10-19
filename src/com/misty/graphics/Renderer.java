@@ -8,7 +8,6 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
 import android.opengl.GLES20;
-import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import com.misty.R;
 import com.misty.graphics.textures.Texture;
@@ -21,7 +20,6 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 	
 	private final Context context;
 	private final Engine engine;
-	private final GLSurfaceView screen;
 	private final ScreenResolution resolution;
 	
 	// state
@@ -41,11 +39,10 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		RUNNING, IDLE, PAUSED, FINISHED
 	}
 
-	public Renderer(Context context, Engine engine, GLSurfaceView screen, ScreenResolution resolution)
+	public Renderer(Context context, Engine engine, ScreenResolution resolution)
 	{
 		this.context = context;
 		this.engine = engine;
-		this.screen = screen;
 		this.resolution = resolution;
 		this.startTime = System.nanoTime();
 		
@@ -146,11 +143,6 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 	
 	public void pause(boolean finishing)
 	{
-		if (this.screen != null)
-		{
-			this.screen.onPause();
-		}
-		
 		synchronized (this.stateChangedLock)
 		{
 			if (this.state == RendererStatus.RUNNING)
@@ -179,14 +171,6 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		}
 	}
 	
-	public void resume()
-	{
-		if (this.screen != null)
-		{
-			this.screen.onResume();
-		}
-	}
-
 	// ==================== UTILS
 	
 	private int compileShader(int type, String shaderCode)
