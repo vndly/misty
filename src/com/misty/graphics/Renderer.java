@@ -167,13 +167,16 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 			this.state = RendererStatus.RUNNING;
 		}
 
-		// Resources.Sprites.initialize(this.context, RESOLUTION_X, RESOLUTION_Y);
-
 		this.startTime = System.nanoTime();
 	}
 
 	public void pause(boolean finishing)
 	{
+		if (this.screen != null)
+		{
+			this.screen.onPause();
+		}
+
 		synchronized (this.stateChangedLock)
 		{
 			if (this.state == RendererStatus.RUNNING)
@@ -198,11 +201,6 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 					{
 					}
 				}
-			}
-
-			if (this.screen != null)
-			{
-				this.screen.onPause();
 			}
 		}
 	}
