@@ -1,12 +1,14 @@
 package com.misty.graphics.textures;
 
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
-import com.misty.graphics.VertexArray;
 
 public class Texture
 {
@@ -15,8 +17,8 @@ public class Texture
 	public int width;
 	public int height;
 	
-	public int textureId;
-	public VertexArray vertexArray;
+	private int textureId;
+	private final FloatBuffer floatBuffer;
 	
 	private final float[] modelMatrix = new float[16];
 	private final float[] finalMatrix = new float[16];
@@ -36,7 +38,7 @@ public class Texture
 		this.width = bitmap.getWidth();
 		this.height = bitmap.getHeight();
 		
-		this.vertexArray = getVertexArray(bitmap);
+		this.floatBuffer = getFloatBuffer(bitmap);
 		
 		loadTexture(bitmap);
 	}
@@ -55,9 +57,17 @@ public class Texture
 		GLES20.glUniform1i(uTextureUnitLocation, 0);
 		
 		// rendering the texture
-		this.vertexArray.setVertexAttribPointer(0, aPositionLocation, Texture.POSITION_COMPONENT_COUNT, Texture.STRIDE);
-		this.vertexArray.setVertexAttribPointer(Texture.POSITION_COMPONENT_COUNT, aTextureCoordinatesLocation, Texture.TEXTURE_COORDINATES_COMPONENT_COUNT, Texture.STRIDE);
+		setVertexAttribPointer(0, aPositionLocation, Texture.POSITION_COMPONENT_COUNT, Texture.STRIDE);
+		setVertexAttribPointer(Texture.POSITION_COMPONENT_COUNT, aTextureCoordinatesLocation, Texture.TEXTURE_COORDINATES_COMPONENT_COUNT, Texture.STRIDE);
 		GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, Texture.VERTICES_LENGTH / (Texture.POSITION_COMPONENT_COUNT + Texture.TEXTURE_COORDINATES_COMPONENT_COUNT));
+	}
+	
+	private void setVertexAttribPointer(int dataOffset, int attributeLocation, int componentCount, int stride)
+	{
+		this.floatBuffer.position(dataOffset);
+		GLES20.glVertexAttribPointer(attributeLocation, componentCount, GLES20.GL_FLOAT, false, stride, this.floatBuffer);
+		GLES20.glEnableVertexAttribArray(attributeLocation);
+		this.floatBuffer.position(0);
 	}
 
 	private Bitmap getBitmap(String texturePath)
@@ -90,7 +100,7 @@ public class Texture
 		return result;
 	}
 	
-	private VertexArray getVertexArray(Bitmap bitmap)
+	private FloatBuffer getFloatBuffer(Bitmap bitmap)
 	{
 		float imageWidth = bitmap.getWidth();
 		float imageHeight = bitmap.getHeight();
@@ -114,7 +124,12 @@ public class Texture
 				imageWidth, 0f, 1f, 1f
 			};
 
-		return new VertexArray(vertices);
+		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(vertices.length * Texture.BYTES_PER_FLOAT);
+		byteBuffer.order(ByteOrder.nativeOrder());
+		FloatBuffer result = byteBuffer.asFloatBuffer();
+		result.put(vertices);
+
+		return result;
 	}
 
 	private void loadTexture(Bitmap bitmap)
