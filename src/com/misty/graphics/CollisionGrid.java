@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.SparseArray;
+import com.misty.graphics.textures.Texture;
 import com.misty.kernel.Process;
 
 public class CollisionGrid

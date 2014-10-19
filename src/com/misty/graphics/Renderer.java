@@ -14,6 +14,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import com.misty.R;
+import com.misty.graphics.textures.Texture;
 import com.misty.kernel.Engine;
 
 public class Renderer implements android.opengl.GLSurfaceView.Renderer
