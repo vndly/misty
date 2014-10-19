@@ -1,23 +1,21 @@
 package com.misty.graphics.textures;
 
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 
 public class Texture
 {
-	public final String id;
+	public final String path;
 
-	public int width;
-	public int height;
-	
 	private int textureId;
+
+	public final int width;
+	public final int height;
 	private final FloatBuffer floatBuffer;
 	
 	private final float[] modelMatrix = new float[16];
@@ -31,9 +29,9 @@ public class Texture
 
 	public Texture(String texturePath)
 	{
-		this.id = texturePath;
+		this.path = texturePath;
 		
-		Bitmap bitmap = getBitmap(this.id);
+		Bitmap bitmap = TextureManager.getBitmap(this.path);
 		
 		this.width = bitmap.getWidth();
 		this.height = bitmap.getHeight();
@@ -70,36 +68,6 @@ public class Texture
 		this.floatBuffer.position(0);
 	}
 
-	private Bitmap getBitmap(String texturePath)
-	{
-		Bitmap result = null;
-		InputStream input = null;
-
-		try
-		{
-			input = TextureManager.getTextureStream(texturePath);
-			result = BitmapFactory.decodeStream(input);
-		}
-		catch (Exception e)
-		{
-		}
-		finally
-		{
-			if (input != null)
-			{
-				try
-				{
-					input.close();
-				}
-				catch (Exception e)
-				{
-				}
-			}
-		}
-
-		return result;
-	}
-	
 	private FloatBuffer getFloatBuffer(Bitmap bitmap)
 	{
 		float imageWidth = bitmap.getWidth();
@@ -172,7 +140,7 @@ public class Texture
 	
 	public void reload()
 	{
-		Bitmap bitmap = getBitmap(this.id);
+		Bitmap bitmap = TextureManager.getBitmap(this.path);
 		loadTexture(bitmap);
 	}
 }

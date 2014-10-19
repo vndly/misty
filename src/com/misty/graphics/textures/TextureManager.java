@@ -1,12 +1,13 @@
 package com.misty.graphics.textures;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 public class TextureManager
 {
@@ -25,10 +26,35 @@ public class TextureManager
 			TextureManager.loadTexture(texturePath);
 		}
 	}
-	
-	public static InputStream getTextureStream(String texturePath) throws IOException
+
+	public static Bitmap getBitmap(String texturePath)
 	{
-		return TextureManager.assetManager.open(texturePath);
+		Bitmap result = null;
+		InputStream input = null;
+
+		try
+		{
+			input = TextureManager.assetManager.open(texturePath);
+			result = BitmapFactory.decodeStream(input);
+		}
+		catch (Exception e)
+		{
+		}
+		finally
+		{
+			if (input != null)
+			{
+				try
+				{
+					input.close();
+				}
+				catch (Exception e)
+				{
+				}
+			}
+		}
+
+		return result;
 	}
 	
 	public static Texture loadTexture(String texturePath)

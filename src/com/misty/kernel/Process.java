@@ -101,7 +101,7 @@ public class Process
 
 	public void setImage(String texturePath)
 	{
-		if ((this.texture == null) || ((texturePath != null) && (!texturePath.equals(this.texture.id))))
+		if ((this.texture == null) || ((texturePath != null) && (!texturePath.equals(this.texture.path))))
 		{
 			this.texture = TextureManager.getTexture(texturePath);
 			
