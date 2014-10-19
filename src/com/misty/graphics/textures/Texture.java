@@ -21,7 +21,14 @@ public class Texture
 	{
 		this.id = texturePath;
 
-		reload();
+		Bitmap bitmap = getBitmap(this.id);
+
+		this.width = bitmap.getWidth();
+		this.height = bitmap.getHeight();
+
+		this.vertexArray = getVertexArray(bitmap);
+
+		loadTexture(bitmap);
 	}
 	
 	private Bitmap getBitmap(String texturePath)
@@ -122,12 +129,6 @@ public class Texture
 	public void reload()
 	{
 		Bitmap bitmap = getBitmap(this.id);
-
-		this.width = bitmap.getWidth();
-		this.height = bitmap.getHeight();
-
-		this.vertexArray = getVertexArray(bitmap);
-		
 		loadTexture(bitmap);
 	}
 }
