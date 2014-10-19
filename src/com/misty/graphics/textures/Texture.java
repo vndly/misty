@@ -43,25 +43,20 @@ public class Texture
 
 	public void render(float[] projectionMatrix, float x, float y, int uMatrixLocation, int uTextureUnitLocation, int aPositionLocation, int aTextureCoordinatesLocation)
 	{
-		// Creating model matrix
+		// setting model matrix and final matrix
 		Matrix.setIdentityM(this.modelMatrix, 0);
 		Matrix.translateM(this.modelMatrix, 0, x, y, 0f);
-		
-		// Creating final matrix
 		Matrix.multiplyMM(this.finalMatrix, 0, projectionMatrix, 0, this.modelMatrix, 0);
 
-		// ------------------------------------------------------------------
-
+		// setting uniforms
 		GLES20.glUniformMatrix4fv(uMatrixLocation, 1, false, this.finalMatrix, 0);
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textureId);
 		GLES20.glUniform1i(uTextureUnitLocation, 0);
 		
-		// ------------------------------------
-		
+		// rendering the texture
 		this.vertexArray.setVertexAttribPointer(0, aPositionLocation, Texture.POSITION_COMPONENT_COUNT, Texture.STRIDE);
 		this.vertexArray.setVertexAttribPointer(Texture.POSITION_COMPONENT_COUNT, aTextureCoordinatesLocation, Texture.TEXTURE_COORDINATES_COMPONENT_COUNT, Texture.STRIDE);
-		
 		GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, Texture.VERTICES_LENGTH / (Texture.POSITION_COMPONENT_COUNT + Texture.TEXTURE_COORDINATES_COMPONENT_COUNT));
 	}
 
