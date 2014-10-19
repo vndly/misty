@@ -1,72 +1,133 @@
 package com.misty.graphics.textures;
 
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.opengl.GLES20;
+import android.opengl.GLUtils;
+import com.misty.graphics.VertexArray;
 
 public class Texture
 {
 	public final String id;
+	
+	public int width;
+	public int height;
 
-	public final int width;
-	public final int height;
-	
-	private int textureId;
-	private final FloatBuffer vertexBuffer;
-	private final FloatBuffer textureBuffer;
-	
-	public final Bitmap bitmap;
-	
-	public Texture(String id, InputStream input)
+	public int textureId;
+	public VertexArray vertexArray;
+
+	public Texture(String texturePath)
 	{
-		this.id = id;
-		this.bitmap = BitmapFactory.decodeStream(input);
+		this.id = texturePath;
+
+		reload();
+	}
+	
+	private Bitmap getBitmap(String texturePath)
+	{
+		Bitmap result = null;
+		InputStream input = null;
 		
-		this.width = this.bitmap.getWidth();
-		this.height = this.bitmap.getHeight();
-		
-		float[] vertices = new float[]
+		try
+		{
+			input = TextureManager.getTextureStream(texturePath);
+			result = BitmapFactory.decodeStream(input);
+		}
+		catch (Exception e)
+		{
+		}
+		finally
+		{
+			if (input != null)
 			{
-				// bottom left
-				0, 0,
-				// top left
-				0, this.height,
-				// bottom right
-				this.width, 0,
-				// top right
-				this.width, this.height
+				try
+				{
+					input.close();
+				}
+				catch (Exception e)
+				{
+				}
+			}
+		}
+		
+		return result;
+	}
+
+	private VertexArray getVertexArray(Bitmap bitmap)
+	{
+		float imageWidth = bitmap.getWidth();
+		float imageHeight = bitmap.getHeight();
+
+		float[] vertices =
+			{
+				// Order of coordinates: X, Y, S, T
+				
+				// A----C
+				// | /|
+				// | / |
+				// | / |
+				// |/ |
+				// B----D
+				
+				// Note: T is inverted!
+				
+				0f, imageHeight, 0f, 0f, //
+				0f, 0f, 0f, 1f, //
+				imageWidth, imageHeight, 1f, 0f, //
+				imageWidth, 0f, 1f, 1f
 			};
 		
-		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(vertices.length * 4);
-		byteBuffer.order(ByteOrder.nativeOrder());
-		this.vertexBuffer = byteBuffer.asFloatBuffer();
-		this.vertexBuffer.put(vertices);
-		this.vertexBuffer.flip();
+		return new VertexArray(vertices);
+	}
+	
+	private void loadTexture(Bitmap bitmap)
+	{
+		int[] textureObjectIds = new int[1];
+		GLES20.glGenTextures(1, textureObjectIds, 0);
 		
-		float texture[] = new float[]
+		if (textureObjectIds[0] != 0)
+		{
+			if (bitmap != null)
 			{
-				// top left
-				0, 1,
-				// bottom left
-				0, 0,
-				// top right
-				1, 1,
-				// bottom right
-				1, 0
-			};
-		
-		byteBuffer = ByteBuffer.allocateDirect(texture.length * 4);
-		byteBuffer.order(ByteOrder.nativeOrder());
-		this.textureBuffer = byteBuffer.asFloatBuffer();
-		this.textureBuffer.put(texture);
-		this.textureBuffer.flip();
+				// Bind to the texture in OpenGL
+				GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureObjectIds[0]);
+
+				// Set filtering: a default must be set, or the texture will be
+				// black.
+				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
+				// GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
+				// GLES20.GL_NEAREST);
+				GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+
+				// Load the bitmap into the bound texture.
+				GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+				GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+
+				// Recycle the bitmap, since its data has been loaded into OpenGL.
+				bitmap.recycle();
+
+				// Unbind from the texture.
+				GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+				
+				this.textureId = textureObjectIds[0];
+			}
+			else
+			{
+				GLES20.glDeleteTextures(1, textureObjectIds, 0);
+			}
+		}
 	}
 
 	public void reload()
 	{
-		// TODO
+		Bitmap bitmap = getBitmap(this.id);
+
+		this.width = bitmap.getWidth();
+		this.height = bitmap.getHeight();
+
+		this.vertexArray = getVertexArray(bitmap);
+		
+		loadTexture(bitmap);
 	}
 }

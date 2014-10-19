@@ -7,14 +7,12 @@ import java.io.InputStreamReader;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import com.misty.R;
 import com.misty.graphics.textures.Texture;
+import com.misty.graphics.textures.TextureManager;
 import com.misty.kernel.Engine;
 
 public class Renderer implements android.opengl.GLSurfaceView.Renderer
@@ -41,9 +39,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 	{
 		RUNNING, IDLE, PAUSED, FINISHED
 	}
-	
-	private int textureId = 0;
-	
+
 	public Renderer(Context context, Engine engine, GLSurfaceView screen, ScreenResolution resolution)
 	{
 		this.context = context;
@@ -60,8 +56,6 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 	private static final int POSITION_COMPONENT_COUNT = 2;
 	private static final int TEXTURE_COORDINATES_COMPONENT_COUNT = 2;
 	private static final int STRIDE = (Renderer.POSITION_COMPONENT_COUNT + Renderer.TEXTURE_COORDINATES_COMPONENT_COUNT) * Renderer.BYTES_PER_FLOAT;
-	
-	private VertexArray vertexArray;
 
 	public int getResolutionX()
 	{
@@ -81,8 +75,6 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 	
 	public void render(Texture texture, float x, float y)
 	{
-		this.textureId = loadTexture(this.context, R.drawable.texture);
-		
 		// Creating model matrix
 		float[] modelMatrix = new float[16];
 		Matrix.setIdentityM(modelMatrix, 0);
@@ -96,96 +88,17 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 
 		GLES20.glUniformMatrix4fv(this.uMatrixLocation, 1, false, finalMatrix, 0);
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textureId);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture.textureId);
 		GLES20.glUniform1i(this.uTextureUnitLocation, 0);
 		
 		// ------------------------------------
 		
-		this.vertexArray.setVertexAttribPointer(0, this.aPositionLocation, Renderer.POSITION_COMPONENT_COUNT, Renderer.STRIDE);
-		this.vertexArray.setVertexAttribPointer(Renderer.POSITION_COMPONENT_COUNT, this.aTextureCoordinatesLocation, Renderer.TEXTURE_COORDINATES_COMPONENT_COUNT, Renderer.STRIDE);
+		texture.vertexArray.setVertexAttribPointer(0, this.aPositionLocation, Renderer.POSITION_COMPONENT_COUNT, Renderer.STRIDE);
+		texture.vertexArray.setVertexAttribPointer(Renderer.POSITION_COMPONENT_COUNT, this.aTextureCoordinatesLocation, Renderer.TEXTURE_COORDINATES_COMPONENT_COUNT, Renderer.STRIDE);
 		
 		GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, Renderer.VERTICES_LENGTH / (Renderer.POSITION_COMPONENT_COUNT + Renderer.TEXTURE_COORDINATES_COMPONENT_COUNT));
 	}
-
-	private int loadTexture(Context context, int resourceId)
-	{
-		final int[] textureObjectIds = new int[1];
-		GLES20.glGenTextures(1, textureObjectIds, 0);
-		
-		if (textureObjectIds[0] == 0)
-		{
-			return 0;
-		}
-		
-		final BitmapFactory.Options options = new BitmapFactory.Options();
-		options.inScaled = false;
-		
-		// Read in the resource
-		final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
-		
-		if (bitmap == null)
-		{
-			GLES20.glDeleteTextures(1, textureObjectIds, 0);
-			return 0;
-		}
-
-		float imageWidth = bitmap.getWidth();
-		float imageHeight = bitmap.getHeight();
-
-		// Bind to the texture in OpenGL
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureObjectIds[0]);
-		
-		// Set filtering: a default must be set, or the texture will be
-		// black.
-		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR);
-		// GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-		
-		// Load the bitmap into the bound texture.
-		GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
-		
-		// Note: Following code may cause an error to be reported in the
-		// ADB log as follows: E/IMGSRV(20095): :0: HardwareMipGen:
-		// Failed to generate texture mipmap levels (error=3)
-		// No OpenGL error will be encountered (glGetError() will return
-		// 0). If this happens, just squash the source image to be
-		// square. It will look the same because of texture coordinates,
-		// and mipmap generation will work.
-		
-		GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
-		
-		// Recycle the bitmap, since its data has been loaded into
-		// OpenGL.
-		bitmap.recycle();
-		
-		// Unbind from the texture.
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
-		
-		// --------------
-		float[] vertices =
-			{
-				// Order of coordinates: X, Y, S, T
-
-				// A----C
-				// | /|
-				// | / |
-				// | / |
-				// |/ |
-				// B----D
-
-				// Note: T is inverted!
-
-				0f, imageHeight, 0f, 0f, //
-				0f, 0f, 0f, 1f, //
-				imageWidth, imageHeight, 1f, 0f, //
-				imageWidth, 0f, 1f, 1f
-			};
-		
-		this.vertexArray = new VertexArray(vertices);
-		
-		return textureObjectIds[0];
-	}
-
+	
 	@Override
 	public void onDrawFrame(GL10 unused)
 	{
@@ -239,8 +152,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 			this.state = RendererStatus.RUNNING;
 		}
 		
-		// TODO
-		// Texture.reloadTextures();
+		TextureManager.reloadTextures();
 	}
 	
 	@Override

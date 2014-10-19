@@ -1,5 +1,6 @@
 package com.misty.graphics.textures;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,34 +26,15 @@ public class TextureManager
 		}
 	}
 	
+	public static InputStream getTextureStream(String texturePath) throws IOException
+	{
+		return TextureManager.assetManager.open(texturePath);
+	}
+	
 	public static Texture loadTexture(String texturePath)
 	{
-		Texture result = null;
-		
-		InputStream input = null;
-		
-		try
-		{
-			input = TextureManager.assetManager.open(texturePath);
-			result = new Texture(texturePath, input);
-			TextureManager.loadedTextures.put(texturePath, result);
-		}
-		catch (Exception e)
-		{
-		}
-		finally
-		{
-			if (input != null)
-			{
-				try
-				{
-					input.close();
-				}
-				catch (Exception e)
-				{
-				}
-			}
-		}
+		Texture result = new Texture(texturePath);
+		TextureManager.loadedTextures.put(texturePath, result);
 		
 		return result;
 	}
