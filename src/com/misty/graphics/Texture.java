@@ -119,13 +119,14 @@ public class Texture
 		return result;
 	}
 	
-	public static void reloadTextures(GL10 screen)
+	public static void reloadTextures()
 	{
 		Collection<Texture> textures = Texture.loadedTextures.values();
 
 		for (Texture texture : textures)
 		{
-			texture.initializeTexture(screen);
+			// texture.initializeTexture(screen);
+			// TODO
 		}
 	}
 	
@@ -149,7 +150,7 @@ public class Texture
 		screen.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
 	}
 	
-	public void render(GL10 screen, float x, float y)
+	private void render(GL10 screen, float x, float y)
 	{
 		if (!this.textureInitialized)
 		{

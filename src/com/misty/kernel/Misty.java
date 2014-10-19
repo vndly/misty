@@ -30,7 +30,8 @@ public abstract class Misty extends Activity implements OnTouchListener
 		this.engine = new Engine(this);
 
 		GLSurfaceView screen = new GLSurfaceView(this);
-		Renderer renderer = new Renderer(this.engine, screen, getResolution());
+		screen.setEGLContextClientVersion(2);
+		Renderer renderer = new Renderer(this, this.engine, screen, getResolution());
 		screen.setRenderer(renderer);
 		screen.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 		screen.setOnTouchListener(this);
