@@ -51,12 +51,6 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		engine.setRenderer(this, resolution);
 	}
 
-	private static final int BYTES_PER_FLOAT = 4;
-	private static final int VERTICES_LENGTH = 16;
-	private static final int POSITION_COMPONENT_COUNT = 2;
-	private static final int TEXTURE_COORDINATES_COMPONENT_COUNT = 2;
-	private static final int STRIDE = (Renderer.POSITION_COMPONENT_COUNT + Renderer.TEXTURE_COORDINATES_COMPONENT_COUNT) * Renderer.BYTES_PER_FLOAT;
-	
 	public int getResolutionX()
 	{
 		return this.resolution.horizontal;
@@ -75,28 +69,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 
 	public void render(Texture texture, float x, float y)
 	{
-		// Creating model matrix
-		float[] modelMatrix = new float[16];
-		Matrix.setIdentityM(modelMatrix, 0);
-		Matrix.translateM(modelMatrix, 0, x, y, 0f);
-
-		// Creating final matrix
-		float[] finalMatrix = new float[16];
-		Matrix.multiplyMM(finalMatrix, 0, this.projectionMatrix, 0, modelMatrix, 0);
-		
-		// ------------------------------------------------------------------
-		
-		GLES20.glUniformMatrix4fv(this.uMatrixLocation, 1, false, finalMatrix, 0);
-		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture.textureId);
-		GLES20.glUniform1i(this.uTextureUnitLocation, 0);
-
-		// ------------------------------------
-
-		texture.vertexArray.setVertexAttribPointer(0, this.aPositionLocation, Renderer.POSITION_COMPONENT_COUNT, Renderer.STRIDE);
-		texture.vertexArray.setVertexAttribPointer(Renderer.POSITION_COMPONENT_COUNT, this.aTextureCoordinatesLocation, Renderer.TEXTURE_COORDINATES_COMPONENT_COUNT, Renderer.STRIDE);
-
-		GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, Renderer.VERTICES_LENGTH / (Renderer.POSITION_COMPONENT_COUNT + Renderer.TEXTURE_COORDINATES_COMPONENT_COUNT));
+		texture.render(this.projectionMatrix, x, y, this.uMatrixLocation, this.uTextureUnitLocation, this.aPositionLocation, this.aTextureCoordinatesLocation);
 	}
 
 	@Override
