@@ -46,6 +46,9 @@ public class Texture
 		Matrix.setIdentityM(this.modelMatrix, 0);
 		Matrix.translateM(this.modelMatrix, 0, x, y, 0f);
 
+		// TODO: change 1 for -1 to mirror the texture in the corresponding axis
+		// Matrix.scaleM(this.modelMatrix, 0, 1, 1, 1);
+
 		// TODO: PASS THE ANGLE TO ROTATE
 		float angle = 0;
 		Matrix.rotateM(this.modelMatrix, 0, angle, 0, 0, 1);
