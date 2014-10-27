@@ -1,33 +1,33 @@
 package com.misty.math;
 
-public class Vector2D
+public class Vector
 {
 	public float x = 0;
 	public float y = 0;
 	
-	public Vector2D()
+	public Vector()
 	{
 		this(0, 0);
 	}
 	
-	public Vector2D(float x, float y)
+	public Vector(float x, float y)
 	{
 		this.x = x;
 		this.y = y;
 	}
 	
-	public Vector2D(Vector2D other)
+	public Vector(Vector other)
 	{
 		this.x = other.x;
 		this.y = other.y;
 	}
 	
-	public Vector2D copy()
+	public Vector copy()
 	{
-		return new Vector2D(this.x, this.y);
+		return new Vector(this.x, this.y);
 	}
 	
-	public Vector2D set(float x, float y)
+	public Vector set(float x, float y)
 	{
 		this.x = x;
 		this.y = y;
@@ -35,12 +35,12 @@ public class Vector2D
 		return this;
 	}
 	
-	public Vector2D set(Vector2D other)
+	public Vector set(Vector other)
 	{
 		return set(other.x, other.y);
 	}
 	
-	public Vector2D add(float x, float y)
+	public Vector add(float x, float y)
 	{
 		this.x += x;
 		this.y += y;
@@ -48,12 +48,12 @@ public class Vector2D
 		return this;
 	}
 	
-	public Vector2D add(Vector2D other)
+	public Vector add(Vector other)
 	{
 		return add(other.x, other.y);
 	}
 	
-	public Vector2D sub(float x, float y)
+	public Vector sub(float x, float y)
 	{
 		this.x -= x;
 		this.y -= y;
@@ -61,12 +61,12 @@ public class Vector2D
 		return this;
 	}
 	
-	public Vector2D sub(Vector2D other)
+	public Vector sub(Vector other)
 	{
 		return sub(other.x, other.y);
 	}
 	
-	public Vector2D mul(float scalar)
+	public Vector mul(float scalar)
 	{
 		this.x *= scalar;
 		this.y *= scalar;
@@ -79,7 +79,7 @@ public class Vector2D
 		return (float)Math.sqrt((this.x * this.x) + (this.y * this.y));
 	}
 	
-	public Vector2D normalize()
+	public Vector normalize()
 	{
 		float len = length();
 		
@@ -104,7 +104,7 @@ public class Vector2D
 		return angle;
 	}
 	
-	public Vector2D rotate(float angle)
+	public Vector rotate(float angle)
 	{
 		float rad = (float)Math.toRadians(angle);
 		
@@ -128,7 +128,7 @@ public class Vector2D
 		return (float)Math.sqrt((distX * distX) + (distY * distY));
 	}
 	
-	public float distance(Vector2D other)
+	public float distance(Vector other)
 	{
 		return distance(other.x, other.y);
 	}
@@ -141,7 +141,7 @@ public class Vector2D
 		return (distX * distX) + (distY * distY);
 	}
 	
-	public float distSquared(Vector2D other)
+	public float distSquared(Vector other)
 	{
 		return distSquared(other.x, other.y);
 	}
