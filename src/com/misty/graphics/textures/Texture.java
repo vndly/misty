@@ -38,19 +38,45 @@ public class Texture
 		
 		loadTexture(bitmap);
 	}
-
+	
 	// TODO: PASS THE PARAMETER Z TO RENDER THE DEPTH
-	public void render(float[] projectionMatrix, float x, float y, float z, float angle, int uMatrixLocation, int uTextureUnitLocation, int aPositionLocation, int aTextureCoordinatesLocation)
+	public void render(float[] projectionMatrix, float x, float y, float z, float angle, float orientationHorizontal, float orientationVertical, int uMatrixLocation, int uTextureUnitLocation, int aPositionLocation, int aTextureCoordinatesLocation)
 	{
 		// setting model matrix and final matrix
 		Matrix.setIdentityM(this.modelMatrix, 0);
 		Matrix.translateM(this.modelMatrix, 0, x, y, z);
+		
+		if (angle != 0)
+		{
+			// float radius = (float)Math.sqrt(Math.pow(this.width / 2, 2) + Math.pow(this.width / 2, 2));
+			//
+			// float newX1 = ((float)Math.cos(Math.toRadians(45)) * radius);
+			// float newY1 = ((float)Math.sin(Math.toRadians(45)) * radius);
+			//
+			// float newX2 = ((float)Math.cos(Math.toRadians(angle + 45)) * radius);
+			// float newY2 = ((float)Math.sin(Math.toRadians(angle + 45)) * radius);
+			//
+			// float diffX = (newX1 - newX2);
+			// float diffY = (newY1 - newY2);
+			//
+			// Log.e("", diffX + " , " + diffY);
+			
+			Matrix.rotateM(this.modelMatrix, 0, angle, 0, 0, 1);
 
-		// TODO: change 1 for -1 to mirror the texture in the corresponding axis
-		// Matrix.scaleM(this.modelMatrix, 0, 1, 1, 1);
+			// Matrix.translateM(this.modelMatrix, 0, diffX, diffY, 0);
+		}
 
-		Matrix.rotateM(this.modelMatrix, 0, angle, 0, 0, 1);
-
+		if (orientationHorizontal == -1)
+		{
+			Matrix.translateM(this.modelMatrix, 0, this.width, 0, 0);
+			Matrix.scaleM(this.modelMatrix, 0, orientationHorizontal, 1, 1);
+		}
+		if (orientationVertical == -1)
+		{
+			Matrix.translateM(this.modelMatrix, 0, 0, this.height, 0);
+			Matrix.scaleM(this.modelMatrix, 0, 1, orientationVertical, 1);
+		}
+		
 		Matrix.multiplyMM(this.finalMatrix, 0, projectionMatrix, 0, this.modelMatrix, 0);
 
 		// setting uniforms

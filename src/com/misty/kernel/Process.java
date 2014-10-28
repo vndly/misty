@@ -35,6 +35,10 @@ public class Process
 
 	// angle
 	public float angle = 0;
+	
+	// orientation
+	public int orientationHorizontal = 1;
+	public int orientationVertical = 1;
 
 	// size
 	public int width = 0;
@@ -93,12 +97,12 @@ public class Process
 	}
 
 	// ============================= TEXTURE =========================== \\
-	
+
 	public void render(Renderer renderer)
 	{
 		if (hasImage() && this.visible && (!isSpeeling()))
 		{
-			renderer.render(this.texture, this.x, this.y, this.z, this.angle);
+			renderer.render(this.texture, this.x, this.y, this.z, this.angle, this.orientationHorizontal, this.orientationVertical);
 		}
 	}
 

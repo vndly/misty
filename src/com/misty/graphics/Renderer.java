@@ -69,9 +69,9 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		Matrix.orthoM(this.projectionMatrix, 0, camera.x, camera.x + this.resolution.horizontal, camera.y, camera.y + this.resolution.vertical, -1f, 1f);
 	}
 	
-	public void render(Texture texture, float x, float y, float z, float angle)
+	public void render(Texture texture, float x, float y, float z, float angle, float orientationHorizontal, float orientationVertical)
 	{
-		texture.render(this.projectionMatrix, x, y, z, angle, this.uMatrixLocation, this.uTextureUnitLocation, this.aPositionLocation, this.aTextureCoordinatesLocation);
+		texture.render(this.projectionMatrix, x, y, z, angle, orientationHorizontal, orientationVertical, this.uMatrixLocation, this.uTextureUnitLocation, this.aPositionLocation, this.aTextureCoordinatesLocation);
 	}
 	
 	@Override
