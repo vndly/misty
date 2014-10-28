@@ -33,6 +33,9 @@ public class Process
 	public float y = 0;
 	public int z = 0;
 
+	// angle
+	public float angle = 0;
+
 	// size
 	public int width = 0;
 	public int height = 0;
@@ -95,7 +98,7 @@ public class Process
 	{
 		if (hasImage() && this.visible && (!isSpeeling()))
 		{
-			renderer.render(this.texture, this.x, this.y);
+			renderer.render(this.texture, this.x, this.y, this.z, this.angle);
 		}
 	}
 

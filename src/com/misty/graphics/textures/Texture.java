@@ -40,17 +40,15 @@ public class Texture
 	}
 
 	// TODO: PASS THE PARAMETER Z TO RENDER THE DEPTH
-	public void render(float[] projectionMatrix, float x, float y, int uMatrixLocation, int uTextureUnitLocation, int aPositionLocation, int aTextureCoordinatesLocation)
+	public void render(float[] projectionMatrix, float x, float y, float z, float angle, int uMatrixLocation, int uTextureUnitLocation, int aPositionLocation, int aTextureCoordinatesLocation)
 	{
 		// setting model matrix and final matrix
 		Matrix.setIdentityM(this.modelMatrix, 0);
-		Matrix.translateM(this.modelMatrix, 0, x, y, 0f);
+		Matrix.translateM(this.modelMatrix, 0, x, y, z);
 
 		// TODO: change 1 for -1 to mirror the texture in the corresponding axis
 		// Matrix.scaleM(this.modelMatrix, 0, 1, 1, 1);
 
-		// TODO: PASS THE ANGLE TO ROTATE
-		float angle = 0;
 		Matrix.rotateM(this.modelMatrix, 0, angle, 0, 0, 1);
 
 		Matrix.multiplyMM(this.finalMatrix, 0, projectionMatrix, 0, this.modelMatrix, 0);
