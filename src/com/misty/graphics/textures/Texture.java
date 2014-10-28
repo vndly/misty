@@ -44,36 +44,19 @@ public class Texture
 	{
 		// setting model matrix and final matrix
 		Matrix.setIdentityM(this.modelMatrix, 0);
-		Matrix.translateM(this.modelMatrix, 0, x, y, z);
+		Matrix.translateM(this.modelMatrix, 0, x + (this.width / 2), y + (this.height / 2), z);
 		
 		if (angle != 0)
 		{
-			// float radius = (float)Math.sqrt(Math.pow(this.width / 2, 2) + Math.pow(this.width / 2, 2));
-			//
-			// float newX1 = ((float)Math.cos(Math.toRadians(45)) * radius);
-			// float newY1 = ((float)Math.sin(Math.toRadians(45)) * radius);
-			//
-			// float newX2 = ((float)Math.cos(Math.toRadians(angle + 45)) * radius);
-			// float newY2 = ((float)Math.sin(Math.toRadians(angle + 45)) * radius);
-			//
-			// float diffX = (newX1 - newX2);
-			// float diffY = (newY1 - newY2);
-			//
-			// Log.e("", diffX + " , " + diffY);
-			
 			Matrix.rotateM(this.modelMatrix, 0, angle, 0, 0, 1);
-
-			// Matrix.translateM(this.modelMatrix, 0, diffX, diffY, 0);
 		}
 
 		if (orientationHorizontal == -1)
 		{
-			Matrix.translateM(this.modelMatrix, 0, this.width, 0, 0);
 			Matrix.scaleM(this.modelMatrix, 0, orientationHorizontal, 1, 1);
 		}
 		if (orientationVertical == -1)
 		{
-			Matrix.translateM(this.modelMatrix, 0, 0, this.height, 0);
 			Matrix.scaleM(this.modelMatrix, 0, 1, orientationVertical, 1);
 		}
 		
@@ -117,10 +100,10 @@ public class Texture
 
 				// Note: T is inverted!
 
-				0f, imageHeight, 0f, 0f, //
-				0f, 0f, 0f, 1f, //
-				imageWidth, imageHeight, 1f, 0f, //
-				imageWidth, 0f, 1f, 1f
+				-imageWidth / 2, imageHeight / 2, 0f, 0f, //
+				-imageWidth / 2, -imageHeight / 2, 0f, 1f, //
+				imageWidth / 2, imageHeight / 2, 1f, 0f, //
+				imageWidth / 2, -imageHeight / 2, 1f, 1f
 			};
 
 		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(vertices.length * Texture.BYTES_PER_FLOAT);
