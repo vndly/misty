@@ -50,7 +50,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		this.resolution = resolution;
 		this.startTime = System.nanoTime();
 		
-		engine.setRenderer(this, resolution);
+		engine.setRenderer(this);
 	}
 	
 	public int getResolutionX()
@@ -66,7 +66,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 	public void clearScreen(Camera camera)
 	{
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-		Matrix.orthoM(this.projectionMatrix, 0, camera.x, camera.x + this.resolution.horizontal, camera.y, camera.y + this.resolution.vertical, -1f, 1f);
+		Matrix.orthoM(this.projectionMatrix, 0, camera.x, camera.x + camera.width, camera.y, camera.y + camera.height, -1f, 1f);
 	}
 	
 	public void render(Texture texture, float x, float y, float scaleX, float scaleY, float angle, float orientationHorizontal, float orientationVertical)
@@ -139,6 +139,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		this.height = height;
 		
 		this.resolution.normalize(width, height);
+		this.engine.updateCamera(this.resolution);
 
 		synchronized (this.stateChangedLock)
 		{
