@@ -236,7 +236,7 @@ public class Engine
 		this.removedProcesses.add(process);
 	}
 
-	private final boolean timersEnabled = false;
+	private final boolean timersEnabled = true;
 	private final TimeCounter logCollisions = new TimeCounter("COLLISIONS: ", this.timersEnabled);
 	private final TimeCounter logProcesses = new TimeCounter("PROCESSES:  ", this.timersEnabled);
 	private final TimeCounter logRender = new TimeCounter("RENDER:     ", this.timersEnabled);
