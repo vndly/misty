@@ -120,19 +120,22 @@ public class Process
 	
 	public final void setImage(String texturePath)
 	{
-		if ((this.texture == null) || ((texturePath != null) && (!texturePath.equals(this.texture.path))))
+		if (texturePath != null)
 		{
-			this.texture = TextureManager.getTexture(texturePath);
-			
-			if (this.texture != null)
+			if ((this.texture == null) || (!texturePath.equals(this.texture.path)))
 			{
-				this.width = this.texture.width;
-				this.height = this.texture.height;
-			}
-			else
-			{
-				this.width = 0;
-				this.height = 0;
+				this.texture = TextureManager.getTexture(texturePath);
+				
+				if (this.texture != null)
+				{
+					this.width = this.texture.width;
+					this.height = this.texture.height;
+				}
+				else
+				{
+					this.width = 0;
+					this.height = 0;
+				}
 			}
 		}
 	}
