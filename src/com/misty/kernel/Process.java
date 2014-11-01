@@ -62,12 +62,12 @@ public class Process
 		this.camera = this.engine.camera;
 	}
 
-	public void start()
+	public final void start()
 	{
 		this.id = this.engine.addProcess(this);
 	}
 
-	public void finish()
+	public final void finish()
 	{
 		this.engine.removeProcess(this);
 		this.alarms.clear();
@@ -103,7 +103,7 @@ public class Process
 
 	// ============================= TEXTURE =========================== \\
 
-	public void render(Renderer renderer)
+	public final void render(Renderer renderer)
 	{
 		if (hasImage() && this.visible && (!isSpeeling()))
 		{
@@ -118,7 +118,7 @@ public class Process
 		}
 	}
 
-	public void setImage(String texturePath)
+	public final void setImage(String texturePath)
 	{
 		if ((this.texture == null) || ((texturePath != null) && (!texturePath.equals(this.texture.path))))
 		{
@@ -137,65 +137,65 @@ public class Process
 		}
 	}
 
-	public boolean hasImage()
+	public final boolean hasImage()
 	{
 		return (this.texture != null);
 	}
 	
 	// ============================= GEOMETRY =========================== \\
 
-	public float getAngle(Process process)
+	public final float getAngle(Process process)
 	{
 		return -(float)Math.toDegrees(Math.atan2(process.y - this.y, process.x - this.x));
 	}
 
-	public float getDistance(Process process)
+	public final float getDistance(Process process)
 	{
 		return (float)(Math.sqrt(Math.pow(this.x - process.x, 2) + Math.pow(this.y - process.y, 2)));
 	}
 	
 	// ============================= RESOLUTION =========================== \\
 
-	public int getResolutionX()
+	public final int getResolutionX()
 	{
 		return this.engine.getResolutionX();
 	}
 	
-	public int getResolutionY()
+	public final int getResolutionY()
 	{
 		return this.engine.getResolutionY();
 	}
 	
 	// ============================= STATE =========================== \\
 
-	public boolean isAwake()
+	public final boolean isAwake()
 	{
 		return this.state == State.AWAKE;
 	}
 
-	public boolean isFrozen()
+	public final boolean isFrozen()
 	{
 		return this.state == State.FROZEN;
 	}
 
-	public boolean isSpeeling()
+	public final boolean isSpeeling()
 	{
 		return this.state == State.SLEEPING;
 	}
 
-	public void wakeUp()
+	public final void wakeUp()
 	{
 		this.visible = true;
 		this.state = State.AWAKE;
 	}
 
-	public void freeze()
+	public final void freeze()
 	{
 		this.visible = true;
 		this.state = State.FROZEN;
 	}
 
-	public void sleep()
+	public final void sleep()
 	{
 		this.visible = false;
 		this.state = State.SLEEPING;
@@ -203,7 +203,7 @@ public class Process
 
 	// ============================= ALARMS =========================== \\
 
-	public int setAlarm(OnAlarmRing listener, int milliseconds)
+	public final int setAlarm(OnAlarmRing listener, int milliseconds)
 	{
 		int id = this.nextAlarmId++;
 
@@ -214,36 +214,36 @@ public class Process
 
 	// ============================= COLLISION =========================== \\
 
-	public List<Process> getCollisions(Class<?> classes)
+	public final List<Process> getCollisions(Class<?> classes)
 	{
 		return this.engine.getCollisions(this, classes);
 	}
 
 	// ============================= AUDIO =========================== \\
 
-	public void playSound(String soundPath)
+	public final void playSound(String soundPath)
 	{
 		this.engine.playSound(soundPath);
 	}
 
-	public void playMusic(String musicPath)
+	public final void playMusic(String musicPath)
 	{
 		this.engine.playMusic(musicPath);
 	}
 
-	public void stopMusic()
+	public final void stopMusic()
 	{
 		this.engine.stopMusic();
 	}
 
 	// ============================= INPUT ============================= \\
 
-	public List<TouchEvent> getTouchEvents()
+	public final List<TouchEvent> getTouchEvents()
 	{
 		return this.engine.getTouchEvents();
 	}
 
-	public boolean isPressed(float left, float right, float bottom, float top)
+	public final boolean isPressed(float left, float right, float bottom, float top)
 	{
 		return this.engine.isPressed(left, right, bottom, top);
 	}
