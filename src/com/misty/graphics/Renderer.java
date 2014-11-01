@@ -29,7 +29,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 	// screen
 	public int width = 0;
 	public int height = 0;
-
+	
 	// shader
 	private int uMatrixLocation;
 	private int uTextureUnitLocation;
@@ -42,7 +42,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 	{
 		RUNNING, IDLE, PAUSED, FINISHED
 	}
-
+	
 	public Renderer(Context context, Engine engine, ScreenResolution resolution)
 	{
 		this.context = context;
@@ -57,7 +57,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 	{
 		return this.resolution.horizontal;
 	}
-
+	
 	public int getResolutionY()
 	{
 		return this.resolution.vertical;
@@ -116,7 +116,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		String fragmentShader = readTextFile(this.context, R.raw.fragment_shader);
 		int program = buildProgram(vertexShader, fragmentShader);
 		GLES20.glUseProgram(program);
-
+		
 		this.uMatrixLocation = GLES20.glGetUniformLocation(program, "u_Matrix");
 		this.uTextureUnitLocation = GLES20.glGetUniformLocation(program, "u_TextureUnit");
 		this.aPositionLocation = GLES20.glGetAttribLocation(program, "a_Position");
@@ -134,13 +134,13 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 	public void onSurfaceChanged(GL10 unused, int width, int height)
 	{
 		GLES20.glViewport(0, 0, width, height);
-
+		
 		this.width = width;
 		this.height = height;
 		
 		this.resolution.normalize(width, height);
 		this.engine.updateCamera(this.resolution);
-
+		
 		synchronized (this.stateChangedLock)
 		{
 			this.state = RendererStatus.RUNNING;
@@ -178,7 +178,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 			}
 		}
 	}
-
+	
 	private int compileShader(int type, String shaderCode)
 	{
 		// Create a new shader object.
@@ -243,7 +243,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		// Compile the shaders.
 		int vertexShader = compileShader(GLES20.GL_VERTEX_SHADER, vertexShaderSource);
 		int fragmentShader = compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderSource);
-
+		
 		// Link them into a shader program.
 		return linkProgram(vertexShader, fragmentShader);
 	}
@@ -272,7 +272,6 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
 		}
 		finally
 		{
@@ -294,7 +293,6 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
 			}
 		}
 	}

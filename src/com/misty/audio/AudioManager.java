@@ -4,26 +4,23 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.SoundPool;
 import android.media.SoundPool.OnLoadCompleteListener;
+import com.misty.utils.Assets;
 
 public class AudioManager
 {
-	private final Context context;
 	private final SoundPool soundPool;
 	private final Map<String, Integer> soundsMap;
 	private MediaPlayer player;
 	private int audioPosition = 0;
-
-	public AudioManager(Context context)
+	
+	public AudioManager()
 	{
-		this.context = context;
-		
 		this.soundsMap = new HashMap<String, Integer>();
 		
 		this.soundPool = new SoundPool(20, android.media.AudioManager.STREAM_MUSIC, 100);
@@ -39,14 +36,14 @@ public class AudioManager
 			}
 		});
 	}
-
+	
 	private void loadSound(String soundPath)
 	{
 		AssetFileDescriptor assetDescriptor = null;
-
+		
 		try
 		{
-			assetDescriptor = this.context.getAssets().openFd(soundPath);
+			assetDescriptor = Assets.getAssetFileDescriptor(soundPath);
 			int resourceId = this.soundPool.load(assetDescriptor, 1);
 			this.soundsMap.put(soundPath, resourceId);
 		}
@@ -58,7 +55,7 @@ public class AudioManager
 			closeDescriptor(assetDescriptor);
 		}
 	}
-
+	
 	public void playSound(String soundPath)
 	{
 		if (this.soundsMap.containsKey(soundPath))
@@ -70,27 +67,27 @@ public class AudioManager
 			loadSound(soundPath);
 		}
 	}
-
-	public void playbackSound(int resourceId)
+	
+	private void playbackSound(int resourceId)
 	{
 		this.soundPool.play(resourceId, 0.5f, 0.5f, 1, 0, 1f);
 	}
-
-	public void playAudio(String audioPath)
+	
+	public void playMusic(String musicPath)
 	{
 		stopMusic();
-
+		
 		AssetFileDescriptor assetDescriptor = null;
-
+		
 		try
 		{
-			assetDescriptor = this.context.getAssets().openFd(audioPath);
+			assetDescriptor = Assets.getAssetFileDescriptor(musicPath);
 			
 			this.player = new MediaPlayer();
 			this.player.setDataSource(assetDescriptor.getFileDescriptor(), assetDescriptor.getStartOffset(), assetDescriptor.getLength());
 			this.player.setLooping(true);
 			this.player.setVolume(1f, 1f);
-
+			
 			this.player.setOnPreparedListener(new OnPreparedListener()
 			{
 				@Override
@@ -99,7 +96,7 @@ public class AudioManager
 					player.start();
 				}
 			});
-
+			
 			this.player.setOnCompletionListener(new OnCompletionListener()
 			{
 				@Override
@@ -118,7 +115,7 @@ public class AudioManager
 			closeDescriptor(assetDescriptor);
 		}
 	}
-
+	
 	private void stopMusic()
 	{
 		if (this.player != null)
@@ -127,7 +124,7 @@ public class AudioManager
 			this.player.release();
 		}
 	}
-
+	
 	public void resumeAudio()
 	{
 		if ((this.player != null) && (!this.player.isPlaying()))
@@ -136,7 +133,7 @@ public class AudioManager
 			this.player.start();
 		}
 	}
-
+	
 	public void pauseAudio()
 	{
 		if (this.player != null)
@@ -145,11 +142,11 @@ public class AudioManager
 			this.audioPosition = this.player.getCurrentPosition();
 		}
 	}
-
+	
 	public void stopAudio()
 	{
 		stopMusic();
-
+		
 		if (this.soundPool != null)
 		{
 			Collection<Integer> soundsIds = this.soundsMap.values();
@@ -158,11 +155,11 @@ public class AudioManager
 			{
 				this.soundPool.unload(soundId);
 			}
-
+			
 			this.soundPool.release();
 		}
 	}
-
+	
 	public boolean isAudioPlaying()
 	{
 		return ((this.player != null) && this.player.isPlaying());

@@ -4,22 +4,14 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import com.misty.utils.Assets;
 
 public class TextureManager
 {
-	private static AssetManager assetManager;
-
 	// TODO: SYNCHORINIZE ACCESS
 	private static Map<String, Texture> loadedTextures = new HashMap<String, Texture>();
-	
-	public static void initialize(Context context)
-	{
-		TextureManager.assetManager = context.getAssets();
-	}
 	
 	public static void loadTextures(String... texturesPath)
 	{
@@ -28,7 +20,7 @@ public class TextureManager
 			TextureManager.loadTexture(texturePath);
 		}
 	}
-
+	
 	public static Texture loadTexture(String texturePath)
 	{
 		Texture result = new Texture(texturePath);
@@ -66,30 +58,21 @@ public class TextureManager
 	protected static Bitmap getBitmap(String texturePath)
 	{
 		Bitmap result = null;
-		InputStream input = null;
-
+		InputStream inputStream = null;
+		
 		try
 		{
-			input = TextureManager.assetManager.open(texturePath);
-			result = BitmapFactory.decodeStream(input);
+			inputStream = Assets.getInputStream(texturePath);
+			result = BitmapFactory.decodeStream(inputStream);
 		}
 		catch (Exception e)
 		{
 		}
 		finally
 		{
-			if (input != null)
-			{
-				try
-				{
-					input.close();
-				}
-				catch (Exception e)
-				{
-				}
-			}
+			Assets.close(inputStream);
 		}
-
+		
 		return result;
 	}
 }

@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 
 public class Assets
 {
@@ -13,12 +14,17 @@ public class Assets
 	{
 		Assets.context = context;
 	}
-
+	
 	public static InputStream getInputStream(String path) throws IOException
 	{
 		return Assets.context.getAssets().open(path);
 	}
-
+	
+	public static AssetFileDescriptor getAssetFileDescriptor(String path) throws IOException
+	{
+		return Assets.context.getAssets().openFd(path);
+	}
+	
 	public static void close(Closeable resource)
 	{
 		if (resource != null)
@@ -29,7 +35,6 @@ public class Assets
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
 			}
 		}
 	}
