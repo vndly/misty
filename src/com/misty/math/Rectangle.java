@@ -124,7 +124,7 @@ public class Rectangle
 		return ((xmin > this.x && xmin < this.x + this.width) && (xmax > this.x && xmax < this.x + this.width)) && ((ymin > this.y && ymin < this.y + this.height) && (ymax > this.y && ymax < this.y + this.height));
 	}
 	
-	public boolean overlaps(Rectangle rectangle)
+	public boolean intersects(Rectangle rectangle)
 	{
 		return (this.x < rectangle.x + rectangle.width) && (this.x + this.width > rectangle.x) && (this.y < rectangle.y + rectangle.height) && (this.y + this.height > rectangle.y);
 	}

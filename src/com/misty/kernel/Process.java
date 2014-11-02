@@ -8,6 +8,7 @@ import com.misty.graphics.textures.Texture;
 import com.misty.graphics.textures.TextureManager;
 import com.misty.input.TouchEvent;
 import com.misty.kernel.Alarm.OnAlarmRing;
+import com.misty.math.Rectangle;
 
 public class Process
 {
@@ -143,6 +144,11 @@ public class Process
 	public final boolean hasImage()
 	{
 		return (this.texture != null);
+	}
+	
+	public final Rectangle getBounds()
+	{
+		return new Rectangle(this.x, this.y, this.width, this.height);
 	}
 	
 	// ============================= GEOMETRY =========================== \\
