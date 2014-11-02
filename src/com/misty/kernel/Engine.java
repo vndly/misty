@@ -101,15 +101,15 @@ public class Engine
 	
 	private void updateTouchEvent(int index, float x, float y)
 	{
-		int screenWidth = this.renderer.width;
-		int screenHeight = this.renderer.height;
-		
-		synchronized (this.touchLock)
+		if ((this.renderer.width != 0) && (this.renderer.height != 0))
 		{
-			TouchEvent touchEvent = this.touchEvents[index];
-			touchEvent.pressed = true;
-			touchEvent.x = (int)(x * this.camera.width) / screenWidth;
-			touchEvent.y = (int)((screenHeight - y) * this.camera.height) / screenHeight;
+			synchronized (this.touchLock)
+			{
+				TouchEvent touchEvent = this.touchEvents[index];
+				touchEvent.pressed = true;
+				touchEvent.x = (int)(x * this.camera.width) / this.renderer.width;
+				touchEvent.y = (int)((this.renderer.height - y) * this.camera.height) / this.renderer.height;
+			}
 		}
 	}
 	
