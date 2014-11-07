@@ -10,8 +10,8 @@ import com.misty.utils.Assets;
 
 public class TextureManager
 {
-	// TODO: SYNCHORINIZE ACCESS
-	private static Map<String, Texture> loadedTextures = new HashMap<String, Texture>();
+	private static final Object lock = new Object();
+	private static final Map<String, Texture> loadedTextures = new HashMap<String, Texture>();
 	
 	public static void loadTextures(String... texturesPath)
 	{
@@ -24,18 +24,25 @@ public class TextureManager
 	public static Texture loadTexture(String texturePath)
 	{
 		Texture result = new Texture(texturePath);
-		TextureManager.loadedTextures.put(texturePath, result);
+		
+		synchronized (TextureManager.lock)
+		{
+			TextureManager.loadedTextures.put(texturePath, result);
+		}
 		
 		return result;
 	}
 	
 	public static void reloadTextures()
 	{
-		Collection<Texture> textures = TextureManager.loadedTextures.values();
-		
-		for (Texture texture : textures)
+		synchronized (TextureManager.lock)
 		{
-			texture.reload();
+			Collection<Texture> textures = TextureManager.loadedTextures.values();
+			
+			for (Texture texture : textures)
+			{
+				texture.reload();
+			}
 		}
 	}
 	
@@ -43,13 +50,16 @@ public class TextureManager
 	{
 		Texture result = null;
 		
-		if (TextureManager.loadedTextures.containsKey(texturePath))
+		synchronized (TextureManager.lock)
 		{
-			result = TextureManager.loadedTextures.get(texturePath);
-		}
-		else
-		{
-			result = TextureManager.loadTexture(texturePath);
+			if (TextureManager.loadedTextures.containsKey(texturePath))
+			{
+				result = TextureManager.loadedTextures.get(texturePath);
+			}
+			else
+			{
+				result = TextureManager.loadTexture(texturePath);
+			}
 		}
 		
 		return result;
