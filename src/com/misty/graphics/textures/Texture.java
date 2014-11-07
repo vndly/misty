@@ -13,6 +13,7 @@ public class Texture
 	public final String path;
 	public final int width;
 	public final int height;
+	public final int[][] pixelMap;;
 	
 	private int textureId;
 	private final FloatBuffer floatBuffer;
@@ -24,7 +25,7 @@ public class Texture
 	private static final int POSITION_COMPONENT_COUNT = 2;
 	private static final int TEXTURE_COORDINATES_COMPONENT_COUNT = 2;
 	private static final int STRIDE = (Texture.POSITION_COMPONENT_COUNT + Texture.TEXTURE_COORDINATES_COMPONENT_COUNT) * Texture.BYTES_PER_FLOAT;
-
+	
 	public Texture(String texturePath)
 	{
 		this.path = texturePath;
@@ -33,6 +34,16 @@ public class Texture
 		
 		this.width = bitmap.getWidth();
 		this.height = bitmap.getHeight();
+		
+		this.pixelMap = new int[this.width][this.height];
+		
+		for (int i = 0; i < this.width; i++)
+		{
+			for (int j = 0; j < this.height; j++)
+			{
+				this.pixelMap[i][j] = bitmap.getPixel(i, j);
+			}
+		}
 		
 		this.floatBuffer = getFloatBuffer(bitmap);
 		
@@ -56,7 +67,7 @@ public class Texture
 		}
 		
 		Matrix.multiplyMM(this.finalMatrix, 0, projectionMatrix, 0, this.modelMatrix, 0);
-
+		
 		// setting uniforms
 		GLES20.glUniformMatrix4fv(uMatrixLocation, 1, false, this.finalMatrix, 0);
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -76,7 +87,7 @@ public class Texture
 		GLES20.glEnableVertexAttribArray(attributeLocation);
 		this.floatBuffer.position(0);
 	}
-
+	
 	private FloatBuffer getFloatBuffer(Bitmap bitmap)
 	{
 		float imageWidth = bitmap.getWidth();
@@ -84,37 +95,36 @@ public class Texture
 		
 		float[] vertices =
 			{
-			// Order of coordinates: X, Y, S, T
-
-			// A----C
-			// | /|
-			// | / |
-			// | / |
-			// |/ |
-			// B----D
-
-			// Note: T is inverted!
-
-			-imageWidth / 2, imageHeight / 2, 0f, 0f, //
-			-imageWidth / 2, -imageHeight / 2, 0f, 1f, //
-			imageWidth / 2, imageHeight / 2, 1f, 0f, //
-			imageWidth / 2, -imageHeight / 2, 1f, 1f
+			    // Order of coordinates: X, Y, S, T
+			    
+			    // A----C
+			    // | /|
+			    // | / |
+			    // | / |
+			    // |/ |
+			    // B----D
+			    
+			    // Note: T is inverted!
+			    
+			    -imageWidth / 2, imageHeight / 2, 0f, 0f, //
+			    -imageWidth / 2, -imageHeight / 2, 0f, 1f, //
+			    imageWidth / 2, imageHeight / 2, 1f, 0f, //
+			    imageWidth / 2, -imageHeight / 2, 1f, 1f
 			};
-
+		
 		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(vertices.length * Texture.BYTES_PER_FLOAT);
 		byteBuffer.order(ByteOrder.nativeOrder());
 		FloatBuffer result = byteBuffer.asFloatBuffer();
 		result.put(vertices);
-
+		
 		return result;
 	}
-
-	// TODO: STORE THE PIXEL INFORMATION IN A CLASS CALLED PixelMap
+	
 	private void loadTexture(Bitmap bitmap)
 	{
 		int[] textureObjectIds = new int[1];
 		GLES20.glGenTextures(1, textureObjectIds, 0);
-
+		
 		if (textureObjectIds[0] != 0)
 		{
 			if (bitmap != null)
@@ -143,7 +153,7 @@ public class Texture
 				
 				// Unbind from the texture.
 				GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
-
+				
 				this.textureId = textureObjectIds[0];
 			}
 			else

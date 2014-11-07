@@ -223,7 +223,7 @@ public class Process
 	
 	// ============================= COLLISION =========================== \\
 	
-	public final List<Process> getCollisions(Class<?> classes)
+	public final List<Process> getCollisions(Class<?>... classes)
 	{
 		return this.engine.getCollisions(this, classes);
 	}
