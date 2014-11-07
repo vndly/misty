@@ -163,39 +163,42 @@ public class CollisionGrid
 	{
 		boolean result = false;
 		
-		Texture spriteA = processA.texture;
-		Texture spriteB = processB.texture;
-		
-		if ((spriteA != null) && (spriteB != null))
+		if (processA.visible && processB.visible)
 		{
-			int xA = (int)processA.x;
-			int yA = (int)processA.y;
+			Texture spriteA = processA.texture;
+			Texture spriteB = processB.texture;
 			
-			int xB = (int)processB.x;
-			int yB = (int)processB.y;
-			
-			Rect rectA = new Rect(xA, yA, spriteA.width + xA, spriteA.height + yA);
-			Rect rectB = new Rect(xB, yB, spriteB.width + xB, spriteB.height + yB);
-			
-			if (rectA.intersect(rectB))
+			if ((spriteA != null) && (spriteB != null))
 			{
-				int[][] bitmapA = spriteA.pixelMap;
-				int[][] bitmapB = spriteB.pixelMap;
+				int xA = (int)processA.x;
+				int yA = (int)processA.y;
 				
-				int intersectionWidth = rectA.width();
-				int intersectionHeight = rectA.height();
+				int xB = (int)processB.x;
+				int yB = (int)processB.y;
 				
-				for (int x = 0; ((x < intersectionWidth) && (!result)); x++)
+				Rect rectA = new Rect(xA, yA, spriteA.width + xA, spriteA.height + yA);
+				Rect rectB = new Rect(xB, yB, spriteB.width + xB, spriteB.height + yB);
+				
+				if (rectA.intersect(rectB))
 				{
-					for (int y = 0; (y < intersectionHeight) && (!result); y++)
+					int[][] bitmapA = spriteA.pixelMap;
+					int[][] bitmapB = spriteB.pixelMap;
+					
+					int intersectionWidth = rectA.width();
+					int intersectionHeight = rectA.height();
+					
+					for (int x = 0; ((x < intersectionWidth) && (!result)); x++)
 					{
-						int realX = x + rectA.left;
-						int realY = y + rectA.top;
-						
-						int alphaA = Color.alpha(bitmapA[realX - xA][realY - yA]);
-						int alphaB = Color.alpha(bitmapB[realX - xB][realY - yB]);
-						
-						result = (alphaA > 0) && (alphaB > 0);
+						for (int y = 0; (y < intersectionHeight) && (!result); y++)
+						{
+							int realX = x + rectA.left;
+							int realY = y + rectA.top;
+							
+							int alphaA = Color.alpha(bitmapA[realX - xA][realY - yA]);
+							int alphaB = Color.alpha(bitmapB[realX - xB][realY - yB]);
+							
+							result = (alphaA > 0) && (alphaB > 0);
+						}
 					}
 				}
 			}
