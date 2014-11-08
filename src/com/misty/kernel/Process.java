@@ -146,7 +146,17 @@ public class Process
 		return (this.texture != null);
 	}
 	
-	public final Rectangle getBounds()
+	public final Rectangle getInternalBounds()
+	{
+		float deltaX = (this.texture == null) ? 0 : this.texture.bounds.x;
+		float deltaY = (this.texture == null) ? 0 : this.texture.bounds.y;
+		float boundWidth = (this.texture == null) ? this.width : this.texture.bounds.width;
+		float boundHeight = (this.texture == null) ? this.width : this.texture.bounds.height;
+		
+		return new Rectangle(this.x + deltaX, this.y + deltaY, boundWidth, boundHeight);
+	}
+	
+	public final Rectangle getExternalBounds()
 	{
 		return new Rectangle(this.x, this.y, this.width, this.height);
 	}
@@ -219,6 +229,11 @@ public class Process
 		this.alarms.put(id, new Alarm(id, listener, milliseconds));
 		
 		return id;
+	}
+	
+	public final void removeAlarms()
+	{
+		this.alarms.clear();
 	}
 	
 	// ============================= COLLISION =========================== \\

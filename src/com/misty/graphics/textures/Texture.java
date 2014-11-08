@@ -4,16 +4,19 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import com.misty.math.Rectangle;
 
 public class Texture
 {
 	public final String path;
 	public final int width;
 	public final int height;
-	public final int[][] pixelMap;;
+	public final int[][] pixelMap;
+	public final Rectangle bounds;
 	
 	private int textureId;
 	private final FloatBuffer floatBuffer;
@@ -47,7 +50,117 @@ public class Texture
 		
 		this.floatBuffer = getFloatBuffer(bitmap);
 		
+		this.bounds = getInternalBounds(this.pixelMap, this.width, this.height);
+		
 		loadTexture(bitmap);
+	}
+	
+	private Rectangle getInternalBounds(int[][] pixelMap, int width, int height)
+	{
+		int minX = getMinX(pixelMap);
+		int maxX = getMaxX(pixelMap);
+		int minY = getMinY(pixelMap, height);
+		int maxY = getMaxY(pixelMap, height);
+		
+		return new Rectangle(minX, minY, width - minX - maxX, height - maxY - minY);
+	}
+	
+	private int getMinX(int[][] source)
+	{
+		int result = 0;
+		
+		for (int[] array : source)
+		{
+			if (isEmpty(array))
+			{
+				result++;
+			}
+			else
+			{
+				break;
+			}
+		}
+		
+		return result;
+	}
+	
+	private int getMaxX(int[][] source)
+	{
+		int result = 0;
+		
+		for (int i = (source.length - 1); i >= 0; i--)
+		{
+			if (isEmpty(source[i]))
+			{
+				result++;
+			}
+			else
+			{
+				break;
+			}
+		}
+		
+		return result;
+	}
+	
+	private int getMinY(int[][] source, int height)
+	{
+		boolean valid = true;
+		int result = -1;
+		
+		while ((result < height) && (valid))
+		{
+			result++;
+			
+			for (int[] array : source)
+			{
+				if (Color.alpha(array[height - result - 1]) > 0)
+				{
+					valid = false;
+					break;
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	private int getMaxY(int[][] source, int height)
+	{
+		boolean valid = true;
+		int result = -1;
+		
+		while ((result < height) && (valid))
+		{
+			result++;
+			
+			for (int[] array : source)
+			{
+				if (Color.alpha(array[result]) > 0)
+				{
+					valid = false;
+					break;
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	private boolean isEmpty(int[] row)
+	{
+		boolean result = true;
+		
+		for (int color : row)
+		{
+			if (Color.alpha(color) > 0)
+			{
+				result = false;
+				break;
+			}
+		}
+		
+		return result;
 	}
 	
 	public void render(float[] projectionMatrix, float x, float y, float scaleX, float scaleY, float angle, float orientationHorizontal, float orientationVertical, int uMatrixLocation, int uTextureUnitLocation, int aPositionLocation, int aTextureCoordinatesLocation)
