@@ -33,6 +33,16 @@ public class Rectangle
 		return this;
 	}
 	
+	public float getRight()
+	{
+		return this.x + this.width;
+	}
+	
+	public float getTop()
+	{
+		return this.y + this.height;
+	}
+	
 	public Rectangle setX(float x)
 	{
 		this.x = x;
@@ -126,7 +136,41 @@ public class Rectangle
 	
 	public boolean intersects(Rectangle rectangle)
 	{
-		return (this.x < rectangle.x + rectangle.width) && (this.x + this.width > rectangle.x) && (this.y < rectangle.y + rectangle.height) && (this.y + this.height > rectangle.y);
+		return (this.x < rectangle.getRight()) && (getRight() > rectangle.x) && (this.y < rectangle.getTop()) && (getTop() > rectangle.y);
+	}
+	
+	public boolean intersect(Rectangle rectangle)
+	{
+		if (intersects(rectangle))
+		{
+			if (this.x < rectangle.x)
+			{
+				float newWidth = getRight() - rectangle.x;
+				this.x = rectangle.x;
+				this.width = newWidth;
+			}
+			
+			if (getRight() > rectangle.getRight())
+			{
+				this.width = rectangle.getRight() - this.x;
+			}
+			
+			if (this.y < rectangle.y)
+			{
+				float newHeight = getTop() - rectangle.y;
+				this.y = rectangle.y;
+				this.height = newHeight;
+			}
+			
+			if (getTop() > rectangle.getTop())
+			{
+				this.height = rectangle.getTop() - this.y;
+			}
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public Rectangle set(Rectangle rect)

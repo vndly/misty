@@ -3,10 +3,10 @@ package com.misty.graphics;
 import java.util.ArrayList;
 import java.util.List;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.util.SparseArray;
 import com.misty.graphics.textures.Texture;
 import com.misty.kernel.Process;
+import com.misty.math.Rectangle;
 
 public class CollisionGrid
 {
@@ -165,10 +165,10 @@ public class CollisionGrid
 		
 		if (processA.visible && processB.visible)
 		{
-			Texture spriteA = processA.texture;
-			Texture spriteB = processB.texture;
+			Texture textureA = processA.texture;
+			Texture textureB = processB.texture;
 			
-			if ((spriteA != null) && (spriteB != null))
+			if ((textureA != null) && (textureB != null))
 			{
 				int xA = (int)processA.x;
 				int yA = (int)processA.y;
@@ -176,23 +176,23 @@ public class CollisionGrid
 				int xB = (int)processB.x;
 				int yB = (int)processB.y;
 				
-				Rect rectA = new Rect(xA, yA, spriteA.width + xA, spriteA.height + yA);
-				Rect rectB = new Rect(xB, yB, spriteB.width + xB, spriteB.height + yB);
+				Rectangle rectangleA = new Rectangle(xA, yA, textureA.width, textureA.height);
+				Rectangle rectangleB = new Rectangle(xB, yB, textureB.width, textureB.height);
 				
-				if (rectA.intersect(rectB))
+				if (rectangleA.intersect(rectangleB))
 				{
-					int[][] bitmapA = spriteA.pixelMap;
-					int[][] bitmapB = spriteB.pixelMap;
+					int[][] bitmapA = textureA.pixelMap;
+					int[][] bitmapB = textureB.pixelMap;
 					
-					int intersectionWidth = rectA.width();
-					int intersectionHeight = rectA.height();
+					int intersectionWidth = (int)rectangleA.width;
+					int intersectionHeight = (int)rectangleA.height;
 					
 					for (int x = 0; ((x < intersectionWidth) && (!result)); x++)
 					{
 						for (int y = 0; (y < intersectionHeight) && (!result); y++)
 						{
-							int realX = x + rectA.left;
-							int realY = y + rectA.top;
+							int realX = x + (int)rectangleA.x;
+							int realY = y + (int)rectangleA.y;
 							
 							int alphaA = Color.alpha(bitmapA[realX - xA][realY - yA]);
 							int alphaB = Color.alpha(bitmapB[realX - xB][realY - yB]);
