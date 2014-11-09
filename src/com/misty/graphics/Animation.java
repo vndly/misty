@@ -5,11 +5,18 @@ public class Animation
 	private float totalTime = 0;
 	private final String[] sprites;
 	private final float frameDuration;
+	private final boolean loop;
+	
+	public Animation(boolean loop, float frameDuration, String... sprites)
+	{
+		this.loop = loop;
+		this.frameDuration = frameDuration;
+		this.sprites = sprites;
+	}
 	
 	public Animation(float frameDuration, String... sprites)
 	{
-		this.frameDuration = frameDuration;
-		this.sprites = sprites;
+		this(true, frameDuration, sprites);
 	}
 	
 	public void reset()
@@ -21,8 +28,15 @@ public class Animation
 	{
 		this.totalTime += delta;
 		
-		int id = (int)(this.totalTime / this.frameDuration);
+		int index = (int)(this.totalTime / this.frameDuration);
 		
-		return this.sprites[id % this.sprites.length];
+		if ((!this.loop) && (index >= this.sprites.length))
+		{
+			return this.sprites[this.sprites.length - 1];
+		}
+		else
+		{
+			return this.sprites[index % this.sprites.length];
+		}
 	}
 }
