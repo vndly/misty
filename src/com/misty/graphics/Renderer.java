@@ -65,7 +65,8 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 	
 	public void clearScreen(Camera camera)
 	{
-		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+		// TODO: WHY IT'S NOT NEEDED?
+		// GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 		Matrix.orthoM(this.projectionMatrix, 0, camera.x, camera.x + camera.width, camera.y, camera.y + camera.height, -1f, 1f);
 	}
 	
