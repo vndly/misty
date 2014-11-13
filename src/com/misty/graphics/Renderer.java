@@ -13,12 +13,14 @@ import com.misty.R;
 import com.misty.graphics.textures.Texture;
 import com.misty.graphics.textures.TextureManager;
 import com.misty.kernel.Engine;
+import com.misty.kernel.Misty;
 
 public class Renderer implements android.opengl.GLSurfaceView.Renderer
 {
+	private boolean started = false;
 	private long startTime;
 	
-	private final Context context;
+	private final Misty misty;
 	private final Engine engine;
 	private final ScreenResolution resolution;
 	
@@ -43,9 +45,9 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		RUNNING, IDLE, PAUSED, FINISHED
 	}
 	
-	public Renderer(Context context, Engine engine, ScreenResolution resolution)
+	public Renderer(Misty misty, Engine engine, ScreenResolution resolution)
 	{
-		this.context = context;
+		this.misty = misty;
 		this.engine = engine;
 		this.resolution = resolution;
 		this.startTime = System.nanoTime();
@@ -113,8 +115,8 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 		GLES20.glClearColor(0f, 0f, 0f, 1f);
 		
-		String vertexShader = readTextFile(this.context, R.raw.vertex_shader);
-		String fragmentShader = readTextFile(this.context, R.raw.fragment_shader);
+		String vertexShader = readTextFile(this.misty, R.raw.vertex_shader);
+		String fragmentShader = readTextFile(this.misty, R.raw.fragment_shader);
 		int program = buildProgram(vertexShader, fragmentShader);
 		GLES20.glUseProgram(program);
 		
@@ -148,6 +150,12 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		}
 		
 		this.startTime = System.nanoTime();
+		
+		if (!this.started)
+		{
+			this.started = true;
+			this.misty.start();
+		}
 	}
 	
 	public void pause(boolean finishing)

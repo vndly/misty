@@ -39,8 +39,6 @@ public abstract class Misty extends Activity implements OnTouchListener
 		setContentView(this.screen);
 		
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		
-		start();
 	}
 	
 	public abstract ScreenResolution getResolution();
@@ -67,7 +65,7 @@ public abstract class Misty extends Activity implements OnTouchListener
 		{
 			this.engine.resume();
 		}
-
+		
 		if (this.screen != null)
 		{
 			this.screen.onResume();
@@ -83,7 +81,7 @@ public abstract class Misty extends Activity implements OnTouchListener
 		{
 			this.engine.pause(isFinishing());
 		}
-
+		
 		if (this.screen != null)
 		{
 			this.screen.onPause();
@@ -97,7 +95,7 @@ public abstract class Misty extends Activity implements OnTouchListener
 		{
 			this.engine.stop();
 		}
-
+		
 		super.onDestroy();
 	}
 }
