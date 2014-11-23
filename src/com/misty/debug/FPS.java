@@ -11,7 +11,7 @@ public class FPS
 	{
 		FPS.frames++;
 		
-		if ((currentTime - FPS.framesStart) > 1000000000)
+		if ((currentTime - FPS.framesStart) > 1E9)
 		{
 			Log.e("DEBUG", "FPS: " + FPS.frames);
 			FPS.frames = 0;
