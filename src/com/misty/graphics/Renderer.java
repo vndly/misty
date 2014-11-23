@@ -90,7 +90,7 @@ public class Renderer implements android.opengl.GLSurfaceView.Renderer
 		if (status == RendererStatus.RUNNING)
 		{
 			long currentTime = System.nanoTime();
-			float delta = (currentTime - this.startTime) / 1000000000f;
+			float delta = (currentTime - this.startTime) / 1E9f;
 			this.startTime = currentTime;
 			
 			// FPS.log(currentTime);
