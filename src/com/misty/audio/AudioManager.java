@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.SoundPool;
 import android.media.SoundPool.OnLoadCompleteListener;
@@ -97,14 +96,6 @@ public class AudioManager
 				}
 			});
 			
-			this.player.setOnCompletionListener(new OnCompletionListener()
-			{
-				@Override
-				public void onCompletion(MediaPlayer player)
-				{
-					player.release();
-				}
-			});
 			this.player.prepare();
 		}
 		catch (IOException e)
